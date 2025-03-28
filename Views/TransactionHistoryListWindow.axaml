@@ -1,0 +1,61 @@
+<Window
+    Title="TransactionHistoryListWindow"
+    d:DesignHeight="450"
+    d:DesignWidth="800"
+    mc:Ignorable="d"
+    x:Class="TBGL.Views.TransactionHistoryListWindow"
+    x:DataType="vm:TransactionHistoryListWindowViewModel"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:vm="using:TBGL.ViewModels"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <StackPanel Margin="20">
+        <StackPanel Orientation="Horizontal">
+            <TextBlock
+                HorizontalAlignment="Left"
+                Margin="5"
+                Text="G/L Account"
+                Width="300" />
+            <TextBlock
+                HorizontalAlignment="Left"
+                Margin="5"
+                Text="Starting Balance"
+                Width="200" />
+            <TextBlock
+                HorizontalAlignment="Left"
+                Margin="5"
+                Text="Ending Balance"
+                Width="200" />
+        </StackPanel>
+        <ScrollViewer Name="ScrollZone">
+            <ItemsControl ItemsSource="{Binding TransactionHistories}">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock
+                                HorizontalAlignment="Left"
+                                Margin="5"
+                                Text="{Binding Metadata}"
+                                Width="300" />
+                            <TextBlock
+                                HorizontalAlignment="Left"
+                                Margin="5"
+                                Text="{Binding StartingBalance}"
+                                Width="200" />
+                            <TextBlock
+                                HorizontalAlignment="Left"
+                                Margin="5"
+                                Text="{Binding EndingBalance}"
+                                Width="200" />
+                            <Button
+                                Content="Details"
+                                HorizontalContentAlignment="Center"
+                                Name="DetailsButton" />
+                        </StackPanel>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </ScrollViewer>
+    </StackPanel>
+</Window>

@@ -1,0 +1,105 @@
+<Window
+    CanResize="False"
+    Height="400"
+    Icon="/Assets/avalonia-logo.ico"
+    Title="TBGL"
+    Width="800"
+    d:DesignHeight="400"
+    d:DesignWidth="600"
+    mc:Ignorable="d"
+    x:Class="TBGL.Views.MainWindow"
+    x:DataType="vm:MainWindowViewModel"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:conv="clr-namespace:TBGL.Common"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:vm="using:TBGL.ViewModels"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <Window.Resources>
+        <conv:PathValueConverter x:Key="PathValueConverter" />
+        <x:Int32 x:Key="LongPathLength">50</x:Int32>
+        <x:Int32 x:Key="ShortPathLength">30</x:Int32>
+    </Window.Resources>
+
+    <ContentControl>
+        <Grid
+            ColumnDefinitions="Auto,500,Auto"
+            HorizontalAlignment="Center"
+            Margin="10"
+            RowDefinitions="50,50,50">
+            <TextBlock
+                Grid.Column="0"
+                Grid.Row="0"
+                HorizontalAlignment="Right"
+                Text="Trial Balance Report:"
+                VerticalAlignment="Center" />
+            <TextBox
+                Grid.Column="1"
+                Grid.Row="0"
+                IsEnabled="False"
+                Margin="10"
+                Text="{Binding TrialBalanceReport, Converter={StaticResource PathValueConverter}, ConverterParameter={StaticResource LongPathLength}}" />
+            <Button
+                Click="OnTrialBalanceButtonClicked"
+                Content="Browse..."
+                Grid.Column="2"
+                Grid.Row="0"
+                HorizontalContentAlignment="Center"
+                Name="TrialBalanceButton"
+                Width="100" />
+
+            <TextBlock
+                Grid.Column="0"
+                Grid.Row="1"
+                HorizontalAlignment="Right"
+                Text="General Ledger Report:"
+                VerticalAlignment="Center" />
+            <TextBox
+                Grid.Column="1"
+                Grid.Row="1"
+                IsEnabled="False"
+                Margin="10"
+                Text="{Binding GeneralLedgerReport, Converter={StaticResource PathValueConverter}, ConverterParameter={StaticResource LongPathLength}}" />
+            <Button
+                Click="OnGeneralLedgerButtonClicked"
+                Content="Browse..."
+                Grid.Column="2"
+                Grid.Row="1"
+                HorizontalContentAlignment="Center"
+                Name="GeneralLedgerButton"
+                Width="100" />
+
+            <TextBlock
+                Grid.Column="0"
+                Grid.Row="2"
+                HorizontalAlignment="Right"
+                Text="Property Template:"
+                VerticalAlignment="Center" />
+            <StackPanel
+                Grid.Column="1"
+                Grid.Row="2"
+                Orientation="Horizontal">
+                <ComboBox
+                    IsEnabled="{Binding TrialBalanceReportSelected}"
+                    ItemsSource="{Binding PropertyTemplates}"
+                    Margin="10"
+                    Name="TemplateSelection"
+                    SelectedItem="{Binding DefaultTemplate}"
+                    SelectionChanged="OnTemplateSelected" />
+                <TextBox
+                    BorderThickness="0"
+                    HorizontalAlignment="Left"
+                    Text="{Binding SelectedTemplateFile, Converter={StaticResource PathValueConverter}, ConverterParameter={StaticResource ShortPathLength}}"
+                    VerticalAlignment="Center" />
+            </StackPanel>
+            <Button
+                Click="OnGenerateButtonClicked"
+                Content="Generate"
+                Grid.Column="2"
+                Grid.Row="2"
+                HorizontalContentAlignment="Center"
+                Name="GenerateButton"
+                Width="100" />
+        </Grid>
+    </ContentControl>
+</Window>
