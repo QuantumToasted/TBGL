@@ -18,13 +18,10 @@ public partial class MainWindow : ViewBase<MainWindowViewModel>
     {
         try
         {
-            if (sender is not Button { DataContext: MainWindowViewModel viewModel })
+            if (!ViewModel.BrowseTrialBalanceCommand.CanExecute(null))
                 return;
 
-            if (!viewModel.BrowseTrialBalanceCommand.CanExecute(null))
-                return;
-
-            await viewModel.BrowseTrialBalanceCommand.ExecuteAsync(e);
+            await ViewModel.BrowseTrialBalanceCommand.ExecuteAsync(e);
         }
         catch (Exception ex)
         {
@@ -36,13 +33,10 @@ public partial class MainWindow : ViewBase<MainWindowViewModel>
     {
         try
         {
-            if (sender is not Button { DataContext: MainWindowViewModel viewModel })
+            if (!ViewModel.BrowseGeneralLedgerCommand.CanExecute(null))
                 return;
 
-            if (!viewModel.BrowseGeneralLedgerCommand.CanExecute(null))
-                return;
-
-            await viewModel.BrowseGeneralLedgerCommand.ExecuteAsync(e);
+            await ViewModel.BrowseGeneralLedgerCommand.ExecuteAsync(e);
         }
         catch (Exception ex)
         {
@@ -54,16 +48,13 @@ public partial class MainWindow : ViewBase<MainWindowViewModel>
     {
         try
         {
-            if (sender is not ComboBox { DataContext: MainWindowViewModel viewModel })
-                return;
-
-            if (!viewModel.BrowseTemplateCommand.CanExecute(null))
+            if (!ViewModel.BrowseTemplateCommand.CanExecute(null))
                 return;
 
             if (e.AddedItems is not [string added])
                 return;
 
-            await viewModel.BrowseTemplateCommand.ExecuteAsync(added);
+            await ViewModel.BrowseTemplateCommand.ExecuteAsync(added);
         }
         catch (Exception ex)
         {
@@ -75,13 +66,10 @@ public partial class MainWindow : ViewBase<MainWindowViewModel>
     {
         try
         {
-            if (sender is not ComboBox { DataContext: MainWindowViewModel viewModel })
+            if (!ViewModel.GenerateWorkpaperCommand.CanExecute(null))
                 return;
 
-            if (!viewModel.GenerateWorkpaperCommand.CanExecute(null))
-                return;
-
-            await viewModel.GenerateWorkpaperCommand.ExecuteAsync(e);
+            await ViewModel.GenerateWorkpaperCommand.ExecuteAsync(e);
         }
         catch (Exception ex)
         {
