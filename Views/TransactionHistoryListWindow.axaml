@@ -1,5 +1,8 @@
 <Window
+    CanResize="False"
+    Height="450"
     Title="TransactionHistoryListWindow"
+    Width="800"
     d:DesignHeight="450"
     d:DesignWidth="800"
     mc:Ignorable="d"
@@ -10,48 +13,59 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:vm="using:TBGL.ViewModels"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
-    <StackPanel Margin="20">
+    <StackPanel HorizontalAlignment="Center" Margin="20">
         <StackPanel Orientation="Horizontal">
             <TextBlock
-                HorizontalAlignment="Left"
                 Margin="5"
                 Text="G/L Account"
+                TextAlignment="Left"
+                VerticalAlignment="Center"
                 Width="300" />
             <TextBlock
-                HorizontalAlignment="Left"
                 Margin="5"
                 Text="Starting Balance"
-                Width="200" />
+                TextAlignment="Center"
+                VerticalAlignment="Center"
+                Width="125" />
             <TextBlock
-                HorizontalAlignment="Left"
                 Margin="5"
                 Text="Ending Balance"
-                Width="200" />
+                TextAlignment="Center"
+                VerticalAlignment="Center"
+                Width="125" />
         </StackPanel>
-        <ScrollViewer Name="ScrollZone">
+        <ScrollViewer Height="400" Name="ScrollZone">
             <ItemsControl ItemsSource="{Binding TransactionHistories}">
                 <ItemsControl.ItemTemplate>
                     <DataTemplate>
-                        <StackPanel Orientation="Horizontal">
+                        <StackPanel Margin="10" Orientation="Horizontal">
                             <TextBlock
-                                HorizontalAlignment="Left"
                                 Margin="5"
                                 Text="{Binding Metadata}"
+                                TextAlignment="Left"
+                                VerticalAlignment="Center"
                                 Width="300" />
                             <TextBlock
                                 HorizontalAlignment="Left"
                                 Margin="5"
-                                Text="{Binding StartingBalance}"
-                                Width="200" />
+                                Text="{Binding StartingBalance, StringFormat='{}{0:C}'}"
+                                TextAlignment="Right"
+                                VerticalAlignment="Center"
+                                Width="125" />
                             <TextBlock
                                 HorizontalAlignment="Left"
                                 Margin="5"
-                                Text="{Binding EndingBalance}"
-                                Width="200" />
+                                Text="{Binding EndingBalance, StringFormat='{}{0:C}'}"
+                                TextAlignment="Right"
+                                VerticalAlignment="Center"
+                                Width="125" />
                             <Button
                                 Content="Details"
                                 HorizontalContentAlignment="Center"
-                                Name="DetailsButton" />
+                                Margin="5"
+                                Name="DetailsButton"
+                                VerticalAlignment="Center"
+                                Width="100" />
                         </StackPanel>
                     </DataTemplate>
                 </ItemsControl.ItemTemplate>

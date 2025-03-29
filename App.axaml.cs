@@ -32,9 +32,9 @@ public partial class App : Application
             .AddViewWithViewModel<MainWindow, MainWindowViewModel>(ServiceLifetime.Singleton)
             .AddViewWithViewModel<TransactionHistoryListWindow, TransactionHistoryListWindowViewModel>()
             .AddSingleton<ViewLocator>()
-            .AddSingletonWithImplementation<IDialogService, TBGLDialogService>()
+            .AddSingletonWithImplementation<IWindowService, TBGLWindowService>()
+            .AddSingletonWithImplementation<IFileDialogService, TBGLFileDialogService>()
             .AddSingletonWithImplementation<IExcelService, TBGLExcelService>()
-            .AddSingleton<IStorageProvider>(x => x.GetRequiredService<MainWindow>().StorageProvider)
             .BuildServiceProvider(new ServiceProviderOptions { ValidateOnBuild = true });
         
         DataTemplates.Add(services.GetRequiredService<ViewLocator>());

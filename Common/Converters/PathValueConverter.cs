@@ -14,30 +14,22 @@ public class PathValueConverter : IValueConverter
         if (parameter is not int length)
             return BindingOperations.DoNothing;
 
-        string? path = value switch
+        var path = value switch
         {
-            IStorageFile { Path.AbsolutePath: var filePath } => filePath,
+            IStorageFile { Path.LocalPath: var filePath } => filePath,
             XLWorksheetLoadResult { Path: var resultPath } => resultPath,
+            Uri { LocalPath: var filePath } => filePath,
             _ => null
         };
 
         if (string.IsNullOrWhiteSpace(path))
             return BindingOperations.DoNothing;
 
-        return DecodeUriString(path).TruncateFromEnd(length);
+        return path.TruncateFromEnd(length);
     }
 
     public object ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture)
     {
         return BindingOperations.DoNothing;
-    }
-
-    private static string DecodeUriString(string url)
-    {
-        string newUrl;
-        while ((newUrl = Uri.UnescapeDataString(url)) != url)
-            url = newUrl;
-
-        return newUrl;
     }
 }

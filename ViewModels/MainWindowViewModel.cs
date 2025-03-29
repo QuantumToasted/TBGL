@@ -4,12 +4,8 @@ using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using Avalonia.Controls;
-using Avalonia.Interactivity;
-using Avalonia.Platform.Storage;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using Microsoft.Extensions.DependencyInjection;
 using MsBox.Avalonia;
 using TBGL.Common;
 using TBGL.Services;
@@ -17,13 +13,12 @@ using TBGL.Views;
 
 namespace TBGL.ViewModels;
 
-public sealed partial class MainWindowViewModel(IDialogService dialogService, IExcelService excelService, 
-    IStorageProvider storageProvider, IServiceProvider services) : ViewModelBase, IDisposable
+public sealed partial class MainWindowViewModel(IFileDialogService dialogService, IExcelService excelService, IWindowService windowService) : ViewModelBase, IDisposable
 {
     private const string DEFAULT_TEMPLATE = "Auto-detect";
     private const string OVERRIDE_TEMPLATE = "Override";
     
-    private static readonly IReadOnlyDictionary<string, string> GeneratedTemplates;
+    private static readonly Dictionary<string?, Uri> GeneratedTemplates;
 
     [ObservableProperty]
     private TrialBalanceLoadResult? _trialBalanceReport;
@@ -32,37 +27,38 @@ public sealed partial class MainWindowViewModel(IDialogService dialogService, IE
     private GeneralLedgerLoadResult? _generalLedgerReport;
 
     [ObservableProperty]
-    private IStorageFile? _selectedTemplateFile;
+    private Uri? _selectedTemplateFilePath;
 
     [ObservableProperty]
-    private bool _trialBalanceReportSelected;
+    private bool _reportSelected;
+    private PropertyMetadata? _detectedProperty;
 
     public ObservableCollection<string> PropertyTemplates { get; } = new(new[] { DEFAULT_TEMPLATE }.Concat(GeneratedTemplates.Keys).Append(OVERRIDE_TEMPLATE));
     
     public static string DefaultTemplate => DEFAULT_TEMPLATE;
 
     [RelayCommand]
-    public async Task BrowseTrialBalance(RoutedEventArgs e)
+    public async Task BrowseTrialBalance()
     {
         if (await dialogService.ShowTrialBalanceFileDialogAsync() is not { } file)
             return;
-
+        
         try
         {
             var result = await excelService.LoadTrialBalanceWorkbookAsync(file);
 
             TrialBalanceReport = result;
-            TrialBalanceReportSelected = true;
+            _detectedProperty = result.Property;
+            ReportSelected = true;
         }
         catch (Exception ex)
         {
             await MessageBoxManager.GetMessageBoxStandard("Error", $"Failed to load trial balance report worksheet:\n{ex}").ShowAsync();
-            TrialBalanceReportSelected = false;
         }
     }
 
     [RelayCommand]
-    public async Task BrowseGeneralLedger(RoutedEventArgs e)
+    public async Task BrowseGeneralLedger()
     {
         if (await dialogService.ShowGeneralLedgerFileDialogAsync() is not { } file)
             return;
@@ -70,17 +66,15 @@ public sealed partial class MainWindowViewModel(IDialogService dialogService, IE
         try
         {
             var result = await excelService.LoadGeneralLedgerWorkbookAsync(file);
-            GeneralLedgerReport = result;
-
             foreach (var history in result.TransactionHistories)
             {
                 history.Validate();
             }
 
-            var listWindow = services.GetRequiredService<TransactionHistoryListWindow>();
-            var mainWindow = services.GetRequiredService<MainWindow>();
-
-            await mainWindow.ShowDialog(listWindow);
+            windowService.ShowTransactionHistoryListWindow();
+            
+            GeneralLedgerReport = result;
+            ReportSelected = true;
         }
         catch (Exception ex)
         {
@@ -94,31 +88,33 @@ public sealed partial class MainWindowViewModel(IDialogService dialogService, IE
         switch (added)
         {
             case OVERRIDE_TEMPLATE:
-                SelectedTemplateFile = await dialogService.ShowTemplateFileDialogAsync();
+                SelectedTemplateFilePath = await dialogService.ShowTemplateFileDialogAsync();
                 break;
             case DEFAULT_TEMPLATE:
                 return;
             default:
-                SelectedTemplateFile = await storageProvider.TryGetFileFromPathAsync(GeneratedTemplates[added]);
+                SelectedTemplateFilePath = GeneratedTemplates[added];
                 return;
         }
     }
 
     [RelayCommand]
-    public async Task GenerateWorkpaper(RoutedEventArgs e)
+    public async Task GenerateWorkpaper()
     {
     }
 
     static MainWindowViewModel()
     {
         GeneratedTemplates = Directory.GetFiles("./Templates", "*.toml", SearchOption.TopDirectoryOnly)
-            .ToDictionary(x => Path.GetFileNameWithoutExtension(x)!, x => x);
+            .ToDictionary(Path.GetFileNameWithoutExtension, x =>
+            {
+                return new Uri(Path.GetFullPath(x));
+            });
     }
 
     public void Dispose()
     {
         TrialBalanceReport?.Dispose();
         GeneralLedgerReport?.Dispose();
-        SelectedTemplateFile?.Dispose();
     }
 }

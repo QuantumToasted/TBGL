@@ -1,41 +1,42 @@
 using System;
 using System.Diagnostics;
+using System.Linq;
 using System.Threading.Tasks;
+using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Platform.Storage;
-using Microsoft.Extensions.DependencyInjection;
-using TBGL.ViewModels;
+using TBGL.Common;
 using TBGL.Views;
 
 namespace TBGL.Services;
 
-public sealed class TBGLDialogService(IView<MainWindowViewModel> view) : IDialogService
+public sealed class TBGLFileDialogService : IFileDialogService
 {
-    private readonly MainWindow _mainWindow = (MainWindow)view;
-    public Task<IStorageFile?> ShowTrialBalanceFileDialogAsync()
+    public Task<Uri?> ShowTrialBalanceFileDialogAsync()
         => OpenFilePickerAsync("Trial Balance Report location?", "Trial_Balance_Report", Filter.XLSX);
 
-    public Task<IStorageFile?> ShowGeneralLedgerFileDialogAsync()
+    public Task<Uri?> ShowGeneralLedgerFileDialogAsync()
         => OpenFilePickerAsync("General Ledger Report location?", "General_Ledger_Report", Filter.XLSX);
 
-    public Task<IStorageFile?> ShowTemplateFileDialogAsync()
+    public Task<Uri?> ShowTemplateFileDialogAsync()
         => OpenFilePickerAsync("Property Template location?", "Template", Filter.TOML);
 
-    public async Task<IStorageFile?> ShowGeneratedWorkpaperDialogAsync(string property)
+    public async Task<Uri?> ShowGeneratedWorkpaperDialogAsync(PropertyMetadata property)
     {
         try
         {
-            var suggestedStartLocation = await _mainWindow.StorageProvider.TryGetWellKnownFolderAsync(WellKnownFolder.Downloads);
-            var file = await _mainWindow.StorageProvider.SaveFilePickerAsync(new FilePickerSaveOptions
+            var mainWindow = GetMainWindow();
+            var suggestedStartLocation = await mainWindow.StorageProvider.TryGetWellKnownFolderAsync(WellKnownFolder.Downloads);
+            var file = await mainWindow.StorageProvider.SaveFilePickerAsync(new FilePickerSaveOptions
             {
                 FileTypeChoices = [Filter.XLSX],
                 DefaultExtension = "xlsx",
                 ShowOverwritePrompt = true,
-                SuggestedFileName = property,
+                SuggestedFileName = property.Code.ToString(),
                 Title = "Save Generated Workpaper",
                 SuggestedStartLocation = suggestedStartLocation
             });
 
-            return file;
+            return file?.Path;
         }
         catch (Exception ex)
         {
@@ -44,11 +45,12 @@ public sealed class TBGLDialogService(IView<MainWindowViewModel> view) : IDialog
         }
     }
 
-    private async Task<IStorageFile?> OpenFilePickerAsync(string title, string suggestedFileName, FilePickerFileType fileType)
+    private static async Task<Uri?> OpenFilePickerAsync(string title, string suggestedFileName, FilePickerFileType fileType)
     {
         try
         {
-            var suggestedStartLocation = await _mainWindow.StorageProvider.TryGetWellKnownFolderAsync(WellKnownFolder.Downloads);
+            var mainWindow = GetMainWindow();
+            var suggestedStartLocation = await mainWindow.StorageProvider.TryGetWellKnownFolderAsync(WellKnownFolder.Downloads);
             var options = new FilePickerOpenOptions
             {
                 AllowMultiple = false,
@@ -58,14 +60,20 @@ public sealed class TBGLDialogService(IView<MainWindowViewModel> view) : IDialog
                 SuggestedStartLocation = suggestedStartLocation
             };
 
-            var files = await _mainWindow.StorageProvider.OpenFilePickerAsync(options);
-            return files.Count > 0 ? files[0] : null;
+            var files = await mainWindow.StorageProvider.OpenFilePickerAsync(options);
+            return files.FirstOrDefault()?.Path;
         }
         catch (Exception ex)
         {
             Debug.WriteLine(ex);
             return null;
         }
+    }
+
+    private static MainWindow GetMainWindow()
+    {
+        var lifetime = Avalonia.Application.Current!.ApplicationLifetime as IClassicDesktopStyleApplicationLifetime;
+        return lifetime?.MainWindow as MainWindow ?? throw new InvalidOperationException("Invalid context for accessing main window.");
     }
 
     private static class Filter

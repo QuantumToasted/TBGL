@@ -18,10 +18,10 @@ public sealed class ViewLocator(IServiceProvider services) : IDataTemplate
             throw new InvalidOperationException();
         }
             
-        if (services.GetKeyedService<IView>(param.GetType()) is not Control control)
+        if (view is not Control control)
             return new TextBlock { Text = $"No view found for type {param.GetType().Name}." };
 
-        view.ViewModel = viewModel;
+        control.DataContext = viewModel;
         return control;
     }
 

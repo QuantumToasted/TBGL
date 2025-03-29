@@ -1,13 +1,15 @@
+using System;
 using System.Threading.Tasks;
-using Avalonia.Platform.Storage;
-using ClosedXML.Excel;
 using TBGL.Common;
 
 namespace TBGL.Services;
 
 public interface IExcelService
 {
-    Task<TrialBalanceLoadResult> LoadTrialBalanceWorkbookAsync(IStorageFile storageFile);
-    Task<GeneralLedgerLoadResult> LoadGeneralLedgerWorkbookAsync(IStorageFile storageFile);
+    TrialBalanceLoadResult? TrialBalanceReport { get; }
+    GeneralLedgerLoadResult? GeneralLedgerReport { get; }
+    
+    Task<TrialBalanceLoadResult> LoadTrialBalanceWorkbookAsync(Uri workbookPath);
+    Task<GeneralLedgerLoadResult> LoadGeneralLedgerWorkbookAsync(Uri workbookPath);
     Task GenerateFilesAsync(TemplateModel template);
 }

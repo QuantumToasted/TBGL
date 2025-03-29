@@ -2,14 +2,13 @@ using System;
 using System.Diagnostics;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
-using Microsoft.Extensions.DependencyInjection;
 using TBGL.ViewModels;
 
 namespace TBGL.Views;
 
 public partial class MainWindow : ViewBase<MainWindowViewModel>
 {
-    public MainWindow()
+    public MainWindow(IServiceProvider services) : base(services)
     {
         InitializeComponent();
     }
@@ -21,7 +20,7 @@ public partial class MainWindow : ViewBase<MainWindowViewModel>
             if (!ViewModel.BrowseTrialBalanceCommand.CanExecute(null))
                 return;
 
-            await ViewModel.BrowseTrialBalanceCommand.ExecuteAsync(e);
+            await ViewModel.BrowseTrialBalanceCommand.ExecuteAsync(null);
         }
         catch (Exception ex)
         {
@@ -36,7 +35,7 @@ public partial class MainWindow : ViewBase<MainWindowViewModel>
             if (!ViewModel.BrowseGeneralLedgerCommand.CanExecute(null))
                 return;
 
-            await ViewModel.BrowseGeneralLedgerCommand.ExecuteAsync(e);
+            await ViewModel.BrowseGeneralLedgerCommand.ExecuteAsync(null);
         }
         catch (Exception ex)
         {
@@ -69,7 +68,7 @@ public partial class MainWindow : ViewBase<MainWindowViewModel>
             if (!ViewModel.GenerateWorkpaperCommand.CanExecute(null))
                 return;
 
-            await ViewModel.GenerateWorkpaperCommand.ExecuteAsync(e);
+            await ViewModel.GenerateWorkpaperCommand.ExecuteAsync(null);
         }
         catch (Exception ex)
         {

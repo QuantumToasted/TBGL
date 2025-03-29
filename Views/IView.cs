@@ -4,17 +4,13 @@ namespace TBGL.Views;
 
 public interface IView
 {
-    ViewModelBase ViewModel { get; set; }
+    ViewModelBase ViewModel { get; }
 }
 
-public interface IView<TViewModel> : IView
+public interface IView<out TViewModel> : IView
     where TViewModel : ViewModelBase
 {
-    new TViewModel ViewModel { get; set; }
+    new TViewModel ViewModel { get; }
 
-    ViewModelBase IView.ViewModel
-    {
-        get => ViewModel;
-        set => ViewModel = (TViewModel)value;
-    }
+    ViewModelBase IView.ViewModel => ViewModel;
 }

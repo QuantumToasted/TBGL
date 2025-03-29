@@ -1,3 +1,5 @@
+using System;
+using System.IO;
 using System.Threading.Tasks;
 using Avalonia.Platform.Storage;
 using ClosedXML.Excel;
@@ -7,22 +9,35 @@ namespace TBGL.Services;
 
 public sealed class TBGLExcelService : IExcelService
 {
-    public async Task<TrialBalanceLoadResult> LoadTrialBalanceWorkbookAsync(IStorageFile storageFile)
+    public TrialBalanceLoadResult? TrialBalanceReport { get; private set; }
+    
+    public GeneralLedgerLoadResult? GeneralLedgerReport { get; private set; }
+
+    public async Task<TrialBalanceLoadResult> LoadTrialBalanceWorkbookAsync(Uri workbookPath)
     {
-        await using var stream = await storageFile.OpenReadAsync();
+        var stream = await GetWorkbookStreamAsync(workbookPath);
         var workbook = new XLWorkbook(stream);
-        return new TrialBalanceLoadResult(storageFile.Path.AbsolutePath, workbook.Worksheet(1));
+        return TrialBalanceReport = new TrialBalanceLoadResult(workbookPath.LocalPath, workbook.Worksheet(1));
     }
 
-    public async Task<GeneralLedgerLoadResult> LoadGeneralLedgerWorkbookAsync(IStorageFile storageFile)
+    public async Task<GeneralLedgerLoadResult> LoadGeneralLedgerWorkbookAsync(Uri workbookPath)
     {
-        await using var stream = await storageFile.OpenReadAsync();
+        var stream = await GetWorkbookStreamAsync(workbookPath);
         var workbook = new XLWorkbook(stream);
-        return new GeneralLedgerLoadResult(storageFile.Path.AbsolutePath, workbook.Worksheet(1));
+        return GeneralLedgerReport = new GeneralLedgerLoadResult(workbookPath.LocalPath, workbook.Worksheet(1));
     }
 
     public async Task GenerateFilesAsync(TemplateModel template)
     {
         throw new System.NotImplementedException();
+    }
+
+    private static async Task<MemoryStream> GetWorkbookStreamAsync(Uri workbookPath)
+    {
+        await using var file = File.OpenRead(workbookPath.LocalPath);
+        var stream = new MemoryStream();
+        await file.CopyToAsync(stream);
+        stream.Seek(0, SeekOrigin.Begin);
+        return stream;
     }
 }

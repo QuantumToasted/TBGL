@@ -1,5 +1,6 @@
+using System;
 using Avalonia.Controls;
-using CommunityToolkit.Mvvm.ComponentModel;
+using Microsoft.Extensions.DependencyInjection;
 using TBGL.ViewModels;
 
 namespace TBGL.Views;
@@ -7,5 +8,10 @@ namespace TBGL.Views;
 public class ViewBase<TViewModel> : Window, IView<TViewModel> 
     where TViewModel : ViewModelBase
 {
-    public TViewModel ViewModel { get; set; } = null!;
+    protected ViewBase(IServiceProvider services)
+    {
+        DataContext = services.GetRequiredService<TViewModel>();
+    }
+    
+    public TViewModel ViewModel => (TViewModel)DataContext!;
 }
