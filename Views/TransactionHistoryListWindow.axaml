@@ -13,64 +13,27 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:vm="using:TBGL.ViewModels"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
-    <StackPanel HorizontalAlignment="Center" Margin="20">
-        <StackPanel Orientation="Horizontal">
-            <TextBlock
-                Margin="5"
-                Text="G/L Account"
-                TextAlignment="Left"
-                VerticalAlignment="Center"
-                Width="300" />
-            <TextBlock
-                Margin="5"
-                Text="Starting Balance"
-                TextAlignment="Center"
-                VerticalAlignment="Center"
-                Width="125" />
-            <TextBlock
-                Margin="5"
-                Text="Ending Balance"
-                TextAlignment="Center"
-                VerticalAlignment="Center"
-                Width="125" />
-        </StackPanel>
-        <ScrollViewer Height="400" Name="ScrollZone">
-            <ItemsControl ItemsSource="{Binding TransactionHistories}">
-                <ItemsControl.ItemTemplate>
+    <DataGrid
+        BorderBrush="Black"
+        BorderThickness="1"
+        IsReadOnly="True"
+        ItemsSource="{Binding TransactionHistories}"
+        Margin="20">
+        <DataGrid.Columns>
+            <DataGridTextColumn Width="Auto" Header="G/L Account" Binding="{Binding Metadata}"/>
+            <DataGridTextColumn Width="Auto" Header="Starting Balance" Binding="{Binding StartingBalance, StringFormat='{}{0:C}'}"/>
+            <DataGridTextColumn Width="Auto" Header="Ending Balance" Binding="{Binding EndingBalance, StringFormat='{}{0:C}'}"/>
+            <DataGridTemplateColumn Width="*" Header="Details">
+                <DataGridTemplateColumn.CellTemplate>
                     <DataTemplate>
-                        <StackPanel Margin="10" Orientation="Horizontal">
-                            <TextBlock
-                                Margin="5"
-                                Text="{Binding Metadata}"
-                                TextAlignment="Left"
-                                VerticalAlignment="Center"
-                                Width="300" />
-                            <TextBlock
-                                HorizontalAlignment="Left"
-                                Margin="5"
-                                Text="{Binding StartingBalance, StringFormat='{}{0:C}'}"
-                                TextAlignment="Right"
-                                VerticalAlignment="Center"
-                                Width="125" />
-                            <TextBlock
-                                HorizontalAlignment="Left"
-                                Margin="5"
-                                Text="{Binding EndingBalance, StringFormat='{}{0:C}'}"
-                                TextAlignment="Right"
-                                VerticalAlignment="Center"
-                                Width="125" />
-                            <Button
-                                Command="{Binding $parent[ItemsControl].((vm:TransactionHistoryListWindowViewModel)DataContext).ShowDetailsCommand}"
-                                CommandParameter="{Binding}"
-                                Content="Details"
+                        <Button HorizontalAlignment="Center"
                                 HorizontalContentAlignment="Center"
-                                Margin="5"
-                                Name="DetailsButton"
-                                VerticalAlignment="Center" />
-                        </StackPanel>
+                                Content="View"
+                                Command="{Binding $parent[DataGrid].((vm:TransactionHistoryListWindowViewModel)DataContext).ShowDetailsCommand}"
+                                CommandParameter="{Binding}"/>
                     </DataTemplate>
-                </ItemsControl.ItemTemplate>
-            </ItemsControl>
-        </ScrollViewer>
-    </StackPanel>
+                </DataGridTemplateColumn.CellTemplate>
+            </DataGridTemplateColumn>
+        </DataGrid.Columns>
+    </DataGrid>
 </Window>
