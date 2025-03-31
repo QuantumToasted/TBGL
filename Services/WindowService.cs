@@ -10,9 +10,6 @@ namespace TBGL.Services;
 
 public sealed class WindowService(IServiceProvider services) : IWindowService
 {
-    public void ShowTransactionHistoryListWindow()
-        => ShowWindow<TransactionHistoryListWindow>();
-    
     public Task ShowTransactionHistoryListWindowAsync()
         => ShowWindowDialogAsync<TransactionHistoryListWindow, MainWindow>();
 
@@ -27,8 +24,6 @@ public sealed class WindowService(IServiceProvider services) : IWindowService
         {
             window.ViewModel.Transactions.Add(transaction);
         }
-        
-        //window.ViewModel.Transactions = new ObservableCollection<GeneralLedgerTransaction>(history.Transactions);
     }
 
     private void ShowWindow<TWindow>() 
