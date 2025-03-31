@@ -8,7 +8,7 @@ using TBGL.Views;
 
 namespace TBGL.Services;
 
-public sealed class TBGLWindowService(IServiceProvider services) : IWindowService
+public sealed class WindowService(IServiceProvider services) : IWindowService
 {
     public void ShowTransactionHistoryListWindow()
         => ShowWindow<TransactionHistoryListWindow>();

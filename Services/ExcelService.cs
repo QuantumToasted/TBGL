@@ -7,7 +7,7 @@ using TBGL.Common;
 
 namespace TBGL.Services;
 
-public sealed class TBGLExcelService : IExcelService
+public sealed class ExcelService : IExcelService
 {
     public TrialBalanceLoadResult? TrialBalanceReport { get; private set; }
     

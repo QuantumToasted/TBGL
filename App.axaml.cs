@@ -33,9 +33,9 @@ public partial class App : Application
             .AddViewWithViewModel<TransactionHistoryListWindow, TransactionHistoryListWindowViewModel>()
             .AddViewWithViewModel<TransactionHistoryDetailsWindow, TransactionHistoryDetailsWindowViewModel>()
             //.AddSingleton<ViewLocator>()
-            .AddSingletonWithImplementation<IWindowService, TBGLWindowService>()
-            .AddSingletonWithImplementation<IFileDialogService, TBGLFileDialogService>()
-            .AddSingletonWithImplementation<IExcelService, TBGLExcelService>()
+            .AddSingletonWithImplementation<IWindowService, WindowService>()
+            .AddSingletonWithImplementation<IFileDialogService, FileDialogService>()
+            .AddSingletonWithImplementation<IExcelService, ExcelService>()
             .BuildServiceProvider(new ServiceProviderOptions { ValidateOnBuild = true });
         
         //DataTemplates.Add(services.GetRequiredService<ViewLocator>());

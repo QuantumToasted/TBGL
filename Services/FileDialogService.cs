@@ -9,7 +9,7 @@ using TBGL.Views;
 
 namespace TBGL.Services;
 
-public sealed class TBGLFileDialogService : IFileDialogService
+public sealed class FileDialogService : IFileDialogService
 {
     public Task<Uri?> ShowTrialBalanceFileDialogAsync()
         => OpenFilePickerAsync("Trial Balance Report location?", "Trial_Balance_Report", Filter.XLSX);
