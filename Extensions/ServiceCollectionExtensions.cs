@@ -25,12 +25,13 @@ public static class ServiceCollectionExtensions
     }
 
     public static IServiceCollection AddViewWithViewModel<TView, TViewModel>(this IServiceCollection serviceCollection,
-        ServiceLifetime viewModelLifetime = ServiceLifetime.Transient)
+        ServiceLifetime lifetime = ServiceLifetime.Transient)
         where TView : ViewBase<TViewModel>
         where TViewModel : ViewModelBase
     {
-        return serviceCollection.Add<TViewModel>(viewModelLifetime)
-            .AddTransient<TView>()
+        return serviceCollection
+            .Add<TViewModel>(lifetime)
+            .Add<TView>(lifetime)
             .AddTransient<IView<TViewModel>, TView>()
             .AddKeyedTransient<IView, TView>(typeof(TViewModel));
     }

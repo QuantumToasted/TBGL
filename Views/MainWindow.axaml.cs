@@ -6,41 +6,11 @@ using TBGL.ViewModels;
 
 namespace TBGL.Views;
 
-public partial class MainWindow : ViewBase<MainWindowViewModel>
+public sealed partial class MainWindow : ViewBase<MainWindowViewModel>
 {
     public MainWindow(IServiceProvider services) : base(services)
     {
         InitializeComponent();
-    }
-    
-    private async void OnTrialBalanceButtonClicked(object? sender, RoutedEventArgs e)
-    {
-        try
-        {
-            if (!ViewModel.BrowseTrialBalanceCommand.CanExecute(null))
-                return;
-
-            await ViewModel.BrowseTrialBalanceCommand.ExecuteAsync(null);
-        }
-        catch (Exception ex)
-        {
-            Debug.WriteLine(ex);
-        }
-    }
-
-    private async void OnGeneralLedgerButtonClicked(object? sender, RoutedEventArgs e)
-    {
-        try
-        {
-            if (!ViewModel.BrowseGeneralLedgerCommand.CanExecute(null))
-                return;
-
-            await ViewModel.BrowseGeneralLedgerCommand.ExecuteAsync(null);
-        }
-        catch (Exception ex)
-        {
-            Debug.WriteLine(ex);
-        }
     }
 
     private async void OnTemplateSelected(object? sender, SelectionChangedEventArgs e)

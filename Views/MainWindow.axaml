@@ -39,7 +39,7 @@
             Margin="10"
             Text="{Binding TrialBalanceReport, Converter={StaticResource PathValueConverter}, ConverterParameter={StaticResource LongPathLength}}" />
         <Button
-            Click="OnTrialBalanceButtonClicked"
+            Command="{Binding BrowseTrialBalanceCommand}"
             Content="Browse..."
             Grid.Column="2"
             Grid.Row="0"
@@ -60,7 +60,7 @@
             Margin="10"
             Text="{Binding GeneralLedgerReport, Converter={StaticResource PathValueConverter}, ConverterParameter={StaticResource LongPathLength}}" />
         <Button
-            Click="OnGeneralLedgerButtonClicked"
+            Command="{Binding BrowseGeneralLedgerCommand}"
             Content="Browse..."
             Grid.Column="2"
             Grid.Row="1"

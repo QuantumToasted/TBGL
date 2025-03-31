@@ -1,9 +1,10 @@
 using System.Threading.Tasks;
+using TBGL.Common;
 
 namespace TBGL.Services;
 
 public interface IWindowService
 {
-    void ShowTransactionHistoryListWindow();
     Task ShowTransactionHistoryListWindowAsync();
+    void ShowTransactionHistoryDetailsWindow(GeneralLedgerTransactionHistory history);
 }

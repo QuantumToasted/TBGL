@@ -60,12 +60,13 @@
                                 VerticalAlignment="Center"
                                 Width="125" />
                             <Button
+                                Command="{Binding $parent[ItemsControl].((vm:TransactionHistoryListWindowViewModel)DataContext).ShowDetailsCommand}"
+                                CommandParameter="{Binding}"
                                 Content="Details"
                                 HorizontalContentAlignment="Center"
                                 Margin="5"
                                 Name="DetailsButton"
-                                VerticalAlignment="Center"
-                                Width="100" />
+                                VerticalAlignment="Center" />
                         </StackPanel>
                     </DataTemplate>
                 </ItemsControl.ItemTemplate>

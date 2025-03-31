@@ -7,11 +7,11 @@ using TBGL.Views;
 
 namespace TBGL;
 
+/*
 public sealed class ViewLocator(IServiceProvider services) : IDataTemplate
 {
     public Control Build(object? param)
     {
-        Console.WriteLine($"Build() called for [{param}]");
         if (param is not ViewModelBase viewModel ||
             services.GetKeyedService<IView>(viewModel.GetType()) is not { } view)
         {
@@ -27,7 +27,7 @@ public sealed class ViewLocator(IServiceProvider services) : IDataTemplate
 
     public bool Match(object? data)
     {
-        Console.WriteLine($"Matching on {data?.GetType()}");
         return data is ViewModelBase;
     }
 }
+*/

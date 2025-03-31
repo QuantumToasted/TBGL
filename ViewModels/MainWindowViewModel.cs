@@ -62,7 +62,7 @@ public sealed partial class MainWindowViewModel(IFileDialogService dialogService
     {
         if (await dialogService.ShowGeneralLedgerFileDialogAsync() is not { } file)
             return;
-
+        
         try
         {
             var result = await excelService.LoadGeneralLedgerWorkbookAsync(file);
@@ -71,7 +71,9 @@ public sealed partial class MainWindowViewModel(IFileDialogService dialogService
                 history.Validate();
             }
 
-            windowService.ShowTransactionHistoryListWindow();
+            //windowService.ShowTransactionHistoryListWindow();
+
+            await windowService.ShowTransactionHistoryListWindowAsync();
             
             GeneralLedgerReport = result;
             ReportSelected = true;

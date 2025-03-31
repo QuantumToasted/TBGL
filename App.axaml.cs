@@ -31,13 +31,14 @@ public partial class App : Application
         var services = new ServiceCollection()
             .AddViewWithViewModel<MainWindow, MainWindowViewModel>(ServiceLifetime.Singleton)
             .AddViewWithViewModel<TransactionHistoryListWindow, TransactionHistoryListWindowViewModel>()
-            .AddSingleton<ViewLocator>()
+            .AddViewWithViewModel<TransactionHistoryDetailsWindow, TransactionHistoryDetailsWindowViewModel>()
+            //.AddSingleton<ViewLocator>()
             .AddSingletonWithImplementation<IWindowService, TBGLWindowService>()
             .AddSingletonWithImplementation<IFileDialogService, TBGLFileDialogService>()
             .AddSingletonWithImplementation<IExcelService, TBGLExcelService>()
             .BuildServiceProvider(new ServiceProviderOptions { ValidateOnBuild = true });
         
-        DataTemplates.Add(services.GetRequiredService<ViewLocator>());
+        //DataTemplates.Add(services.GetRequiredService<ViewLocator>());
         
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
         {
