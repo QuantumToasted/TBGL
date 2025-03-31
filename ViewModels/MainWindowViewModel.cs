@@ -18,7 +18,7 @@ public sealed partial class MainWindowViewModel(IFileDialogService dialogService
     private const string DEFAULT_TEMPLATE = "Auto-detect";
     private const string OVERRIDE_TEMPLATE = "Override";
     
-    private static readonly Dictionary<string?, Uri> GeneratedTemplates;
+    private static readonly Dictionary<string, Uri> GeneratedTemplates;
 
     [ObservableProperty]
     private TrialBalanceLoadResult? _trialBalanceReport;
@@ -32,6 +32,8 @@ public sealed partial class MainWindowViewModel(IFileDialogService dialogService
     [ObservableProperty]
     private bool _reportSelected;
     private PropertyMetadata? _detectedProperty;
+
+    public override string? Title => "TBGL";
 
     public ObservableCollection<string> PropertyTemplates { get; } = new(new[] { DEFAULT_TEMPLATE }.Concat(GeneratedTemplates.Keys).Append(OVERRIDE_TEMPLATE));
     

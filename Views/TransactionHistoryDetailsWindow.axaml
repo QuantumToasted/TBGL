@@ -1,5 +1,5 @@
 <Window
-    Title="TransactionHistoryDetailsWindow"
+    Title="{Binding Title}"
     d:DesignHeight="450"
     d:DesignWidth="800"
     mc:Ignorable="d"

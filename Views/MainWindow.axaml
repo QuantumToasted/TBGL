@@ -2,7 +2,7 @@
     CanResize="False"
     Height="400"
     Icon="/Assets/avalonia-logo.ico"
-    Title="TBGL"
+    Title="{Binding Title}"
     Width="800"
     d:DesignHeight="400"
     d:DesignWidth="600"

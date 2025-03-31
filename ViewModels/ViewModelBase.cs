@@ -2,4 +2,7 @@
 
 namespace TBGL.ViewModels;
 
-public class ViewModelBase : ObservableObject;
+public abstract partial class ViewModelBase : ObservableObject
+{
+    public abstract string? Title { get; }
+}

@@ -15,10 +15,7 @@ public sealed class WindowService(IServiceProvider services) : IWindowService
 
     public void ShowTransactionHistoryDetailsWindow(GeneralLedgerTransactionHistory history)
     {
-        var scope = services.CreateScope();
-        var window = scope.ServiceProvider.GetRequiredService<TransactionHistoryDetailsWindow>();
-
-        window.Show();
+        var window = ShowWindow<TransactionHistoryDetailsWindow>();
         
         foreach (var transaction in history.Transactions)
         {
@@ -26,13 +23,14 @@ public sealed class WindowService(IServiceProvider services) : IWindowService
         }
     }
 
-    private void ShowWindow<TWindow>() 
+    private TWindow ShowWindow<TWindow>() 
         where TWindow : Window
     {
         var scope = services.CreateScope();
         var window = scope.ServiceProvider.GetRequiredService<TWindow>();
         
         window.Show();
+        return window;
     }
     
     private Task ShowWindowDialogAsync<TWindow, TParentWindow>() 

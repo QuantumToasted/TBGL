@@ -5,7 +5,7 @@ using TBGL.ViewModels;
 
 namespace TBGL.Views;
 
-public class ViewBase<TViewModel> : Window, IView<TViewModel> 
+public abstract class ViewBase<TViewModel> : Window, IView<TViewModel> 
     where TViewModel : ViewModelBase
 {
     protected ViewBase(IServiceProvider services)

@@ -9,6 +9,8 @@ public sealed partial class TransactionHistoryListWindowViewModel(IExcelService 
 {
     public ObservableCollection<GeneralLedgerTransactionHistory> TransactionHistories { get; } = new(excelService.GeneralLedgerReport!.TransactionHistories);
 
+    public override string Title => $"Transaction histories for property {excelService.GeneralLedgerReport?.Property}";
+
     [RelayCommand]
     public void ShowDetails(GeneralLedgerTransactionHistory history)
     {
