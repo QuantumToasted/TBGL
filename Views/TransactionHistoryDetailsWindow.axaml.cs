@@ -21,7 +21,6 @@ public sealed partial class TransactionHistoryDetailsWindow : ViewBase<Transacti
 
         if (e.Column is DataGridTextColumn { Binding: BindingBase binding } textColumn)
         {
-            //textColumn.CellStyleClasses.Add("dividend");
             binding.Mode = BindingMode.OneWay;
             binding.StringFormat = "{0:C}";
             binding.Converter = new StringFormatValueConverter(binding.StringFormat, null);
