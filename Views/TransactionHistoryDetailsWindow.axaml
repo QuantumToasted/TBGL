@@ -1,7 +1,7 @@
 <Window
     Height="450"
     Title="{Binding BoundTitle}"
-    Width="1200"
+    SizeToContent="WidthAndHeight"
     d:DesignHeight="450"
     d:DesignWidth="800"
     mc:Ignorable="d"

@@ -1,7 +1,7 @@
 <Window
     Height="450"
     Title="{Binding Title}"
-    Width="700"
+    SizeToContent="WidthAndHeight"
     d:DesignHeight="450"
     d:DesignWidth="700"
     mc:Ignorable="d"
@@ -25,24 +25,27 @@
             <DataGridTextColumn
                 Binding="{Binding Metadata}"
                 Header="G/L Account"
-                Width="*" />
+                Width="Auto" />
             <DataGridTextColumn
                 Binding="{Binding StartingBalance, StringFormat='{}{0:C}'}"
                 Header="Starting Balance"
-                Width="*" />
+                Width="Auto" />
             <DataGridTextColumn
                 Binding="{Binding EndingBalance, StringFormat='{}{0:C}'}"
                 Header="Ending Balance"
-                Width="*" />
+                Width="Auto" />
             <DataGridTemplateColumn Header="Details" Width="Auto">
                 <DataGridTemplateColumn.CellTemplate>
                     <DataTemplate>
                         <Button
                             Command="{Binding $parent[DataGrid].((vm:TransactionHistoryListWindowViewModel)DataContext).ShowDetailsCommand}"
                             CommandParameter="{Binding}"
-                            Content="View"
+                            Content="{Binding ButtonText}"
                             HorizontalAlignment="Center"
-                            HorizontalContentAlignment="Center" />
+                            HorizontalContentAlignment="Center"
+                            Width="75"
+                            IsEnabled="{Binding HasTransactions}"
+                            Margin="5"/>
                     </DataTemplate>
                 </DataGridTemplateColumn.CellTemplate>
             </DataGridTemplateColumn>
