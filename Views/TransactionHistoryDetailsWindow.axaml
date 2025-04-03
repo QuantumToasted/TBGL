@@ -1,5 +1,6 @@
 <Window
     Title="{Binding Title}"
+    Title="{Binding BoundTitle}"
     d:DesignHeight="450"
     d:DesignWidth="800"
     mc:Ignorable="d"

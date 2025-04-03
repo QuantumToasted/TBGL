@@ -16,6 +16,7 @@ public sealed class WindowService(IServiceProvider services) : IWindowService
     public void ShowTransactionHistoryDetailsWindow(GeneralLedgerTransactionHistory history)
     {
         var window = ShowWindow<TransactionHistoryDetailsWindow>();
+        window.ViewModel.Account = history.Metadata;
         
         foreach (var transaction in history.Transactions)
         {
