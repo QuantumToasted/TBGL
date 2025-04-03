@@ -14,7 +14,7 @@ public class GeneralLedgerTransactionHistory(IXLRange range)
 
     public decimal EndingBalance { get; } = range.LastRow().LastCell().GetValue<decimal>();
 
-    public IReadOnlyList<GeneralLedgerTransaction> Transactions { get; } = range.Rows(2, range.RowCount() - 1).Select(GeneralLedgerTransaction.Parse).ToList();
+    public IReadOnlyList<GeneralLedgerTransaction> Transactions { get; } = range.Rows(2, range.RowCount() - 1).Select(GeneralLedgerTransaction.FromRow).ToList();
 
     public void Validate()
     {
