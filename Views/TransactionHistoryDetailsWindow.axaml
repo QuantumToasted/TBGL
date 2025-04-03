@@ -1,6 +1,7 @@
 <Window
-    Title="{Binding Title}"
+    Height="450"
     Title="{Binding BoundTitle}"
+    Width="1200"
     d:DesignHeight="450"
     d:DesignWidth="800"
     mc:Ignorable="d"
@@ -12,12 +13,55 @@
     xmlns:vm="using:TBGL.ViewModels"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
     <DataGrid
-        AutoGenerateColumns="True"
-        AutoGeneratingColumn="GenerateColumnFormat"
         BorderBrush="Black"
         BorderThickness="1"
+        CanUserSortColumns="False"
         GridLinesVisibility="Horizontal"
+        HorizontalAlignment="Stretch"
         IsReadOnly="True"
         ItemsSource="{Binding Transactions}"
-        Margin="20" />
+        Margin="20">
+        <DataGrid.Columns>
+            <DataGridTextColumn
+                Binding="{Binding PostedDate}"
+                Header="Posted Date"
+                Width="Auto" />
+            <DataGridTextColumn
+                Binding="{Binding DocDate}"
+                Header="Doc. Date"
+                Width="Auto" />
+            <DataGridTextColumn
+                Binding="{Binding DocId}"
+                Header="Doc. ID"
+                Width="Auto" />
+            <DataGridTextColumn
+                Binding="{Binding Memo}"
+                Header="Memo"
+                Width="Auto" />
+            <DataGridTextColumn
+                Binding="{Binding Department}"
+                Header="Dept."
+                Width="Auto" />
+            <DataGridTextColumn
+                Binding="{Binding Location}"
+                Header="Location"
+                Width="Auto" />
+            <DataGridTextColumn
+                Binding="{Binding Unit}"
+                Header="Unit"
+                Width="Auto" />
+            <DataGridTextColumn
+                Binding="{Binding Journal}"
+                Header="JNL"
+                Width="Auto" />
+            <DataGridTextColumn
+                Binding="{Binding Debit, StringFormat='{}{0:C}', TargetNullValue='-'}"
+                Header="Debit"
+                Width="Auto" />
+            <DataGridTextColumn
+                Binding="{Binding Credit, StringFormat='{}{0:C}', TargetNullValue='-'}"
+                Header="Credit"
+                Width="Auto" />
+        </DataGrid.Columns>
+    </DataGrid>
 </Window>
