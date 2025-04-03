@@ -33,7 +33,7 @@ public sealed partial class MainWindowViewModel(IFileDialogService dialogService
     private bool _reportSelected;
     private PropertyMetadata? _detectedProperty;
 
-    public override string? Title => "TBGL";
+    public override string Title => "TBGL";
 
     public ObservableCollection<string> PropertyTemplates { get; } = new(new[] { DEFAULT_TEMPLATE }.Concat(GeneratedTemplates.Keys).Append(OVERRIDE_TEMPLATE));
     
