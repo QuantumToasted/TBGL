@@ -6,18 +6,20 @@ using TBGL.Extensions;
 namespace TBGL.Common;
 
 public sealed record GeneralLedgerTransaction(
-    DateOnly PostedDate,
-    DateOnly DocDate,
-    string? DocId,
-    string? Memo,
-    string? Department,
-    string Location,
-    string? Unit,
-    string Journal,
-    decimal? Debit,
-    decimal? Credit)
+    DateOnly? PostedDate = null,
+    DateOnly? DocDate = null,
+    string? DocId = null,
+    string? Memo = null,
+    string? Department = null,
+    string? Location = null,
+    string? Unit = null,
+    string? Journal = null,
+    decimal? Debit = null,
+    decimal? Credit = null)
 {
-    public static GeneralLedgerTransaction Parse(IXLRangeRow row)
+    public static GeneralLedgerTransaction Empty => new();
+    
+    public static GeneralLedgerTransaction FromRow(IXLRangeRow row)
     {
         return new(
             DateOnly.Parse(row.Cell(1).GetString()),
@@ -30,19 +32,5 @@ public sealed record GeneralLedgerTransaction(
             row.Cell(8).GetString(),
             row.Cell(9).TryGetValue(out decimal debit) ? debit : null,
             row.Cell(10).TryGetValue(out decimal credit) ? credit : null);
-    }
-
-    public static bool TryParse(IXLRangeRow row, [NotNullWhen(true)] out GeneralLedgerTransaction? transaction)
-    {
-        try
-        {
-            transaction = Parse(row);
-            return true;
-        }
-        catch
-        {
-            transaction = null;
-            return false;
-        }
     }
 }
