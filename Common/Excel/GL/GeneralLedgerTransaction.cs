@@ -6,6 +6,7 @@ using TBGL.Extensions;
 namespace TBGL.Common;
 
 public sealed record GeneralLedgerTransaction(
+    decimal EndingBalance,
     DateOnly? PostedDate = null,
     DateOnly? DocDate = null,
     string? DocId = null,
@@ -17,11 +18,15 @@ public sealed record GeneralLedgerTransaction(
     decimal? Debit = null,
     decimal? Credit = null)
 {
-    public static GeneralLedgerTransaction Empty => new();
+    public static GeneralLedgerTransaction MemoOnly(string memo, decimal balance) => new(balance, Memo: memo);
     
-    public static GeneralLedgerTransaction FromRow(IXLRangeRow row)
+    public static GeneralLedgerTransaction FromRow(IXLRangeRow row, decimal balance)
     {
+        decimal? debit = row.Cell(9).TryGetValue(out decimal d) ? d : null;
+        decimal? credit = row.Cell(10).TryGetValue(out decimal c) ? c : null;
+        
         return new(
+            balance + (debit ?? 0) - (credit ?? 0),
             DateOnly.Parse(row.Cell(1).GetString()),
             DateOnly.Parse(row.Cell(2).GetString()),
             row.Cell(3).GetStringOrDefault(),
@@ -30,7 +35,7 @@ public sealed record GeneralLedgerTransaction(
             row.Cell(6).GetValue<string>(),
             row.Cell(7).GetStringOrDefault(),
             row.Cell(8).GetString(),
-            row.Cell(9).TryGetValue(out decimal debit) ? debit : null,
-            row.Cell(10).TryGetValue(out decimal credit) ? credit : null);
+            debit,
+            credit);
     }
 }

@@ -18,7 +18,7 @@ public sealed class WindowService(IServiceProvider services) : IWindowService
         var window = ShowWindow<TransactionHistoryDetailsWindow>();
         window.ViewModel.Account = history.Metadata;
         
-        foreach (var transaction in history.Transactions)
+        foreach (var transaction in history.EnumerateTransactions())
         {
             window.ViewModel.Transactions.Add(transaction);
         }

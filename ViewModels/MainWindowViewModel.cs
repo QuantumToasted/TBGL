@@ -68,12 +68,6 @@ public sealed partial class MainWindowViewModel(IFileDialogService dialogService
         try
         {
             var result = await excelService.LoadGeneralLedgerWorkbookAsync(file);
-            foreach (var history in result.TransactionHistories)
-            {
-                history.Validate();
-            }
-
-            //windowService.ShowTransactionHistoryListWindow();
 
             await windowService.ShowTransactionHistoryListWindowAsync();
             

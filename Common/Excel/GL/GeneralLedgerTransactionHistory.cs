@@ -14,17 +14,24 @@ public class GeneralLedgerTransactionHistory(IXLRange range)
 
     public decimal EndingBalance { get; } = range.LastRow().LastCell().GetValue<decimal>();
 
-    public IReadOnlyList<GeneralLedgerTransaction> Transactions { get; } = range.Rows(2, range.RowCount() - 1).Select(GeneralLedgerTransaction.FromRow).ToList();
-
-    public void Validate()
+    public IEnumerable<GeneralLedgerTransaction> EnumerateTransactions(bool includeBalances = true)
     {
         var balance = StartingBalance;
-        foreach (var transaction in Transactions)
-        {
-            balance = balance + transaction.Debit.GetValueOrDefault() - transaction.Credit.GetValueOrDefault();
-        }
+        
+        if (includeBalances)
+            yield return GeneralLedgerTransaction.MemoOnly("Balance Forward", balance);
 
+        foreach (var row in range.Rows(2, range.RowCount() - 1))
+        {
+            var transaction = GeneralLedgerTransaction.FromRow(row, balance);
+            yield return transaction;
+            balance = transaction.EndingBalance;
+        }
+        
         if (balance != EndingBalance)
-            throw new Exception($"Account {Metadata} ending balance should be {EndingBalance:C}, was {balance:C}");
+            throw new Exception("Balance calculation failed.");
+        
+        if (includeBalances)
+            yield return GeneralLedgerTransaction.MemoOnly("Ending Balance", balance);
     }
 }

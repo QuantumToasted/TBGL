@@ -16,6 +16,7 @@
         BorderBrush="Black"
         BorderThickness="1"
         CanUserSortColumns="False"
+        GridLinesVisibility="Horizontal"
         HorizontalAlignment="Stretch"
         IsReadOnly="True"
         ItemsSource="{Binding TransactionHistories}"

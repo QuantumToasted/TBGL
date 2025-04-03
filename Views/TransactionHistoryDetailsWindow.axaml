@@ -62,6 +62,10 @@
                 Binding="{Binding Credit, StringFormat='{}{0:C}', TargetNullValue='-'}"
                 Header="Credit"
                 Width="Auto" />
+            <DataGridTextColumn
+                Binding="{Binding EndingBalance, StringFormat='{}{0:C}'}"
+                Header="Balance"
+                Width="Auto" />
         </DataGrid.Columns>
     </DataGrid>
 </Window>
