@@ -29,15 +29,18 @@ public sealed partial class MainWindowViewModel(IFileDialogService dialogService
     [ObservableProperty]
     private Uri? _selectedTemplateFilePath;
 
-    [ObservableProperty]
+    [ObservableProperty] 
     private bool _reportSelected;
-    private PropertyMetadata? _detectedProperty;
+
+    [ObservableProperty]
+    private string _selectedTemplateCode = DEFAULT_TEMPLATE;
+
+    [ObservableProperty] 
+    private bool _selectedTemplatePathIsOverride;
 
     public override string Title => "TBGL";
 
-    public ObservableCollection<string> PropertyTemplates { get; } = new(new[] { DEFAULT_TEMPLATE }.Concat(GeneratedTemplates.Keys).Append(OVERRIDE_TEMPLATE));
-    
-    public static string DefaultTemplate => DEFAULT_TEMPLATE;
+    public ObservableCollection<string> PropertyTemplates { get; } = new(new [] {DEFAULT_TEMPLATE}.Concat(GeneratedTemplates.Keys).Append(OVERRIDE_TEMPLATE));
 
     [RelayCommand]
     public async Task BrowseTrialBalance()
@@ -50,8 +53,8 @@ public sealed partial class MainWindowViewModel(IFileDialogService dialogService
             var result = await excelService.LoadTrialBalanceWorkbookAsync(file);
 
             TrialBalanceReport = result;
-            _detectedProperty = result.Property;
-            ReportSelected = true;
+
+            UpdateAutoDetectedTemplate(result.Property);
         }
         catch (Exception ex)
         {
@@ -72,7 +75,8 @@ public sealed partial class MainWindowViewModel(IFileDialogService dialogService
             await windowService.ShowTransactionHistoryListWindowAsync();
             
             GeneralLedgerReport = result;
-            ReportSelected = true;
+
+            UpdateAutoDetectedTemplate(result.Property);
         }
         catch (Exception ex)
         {
@@ -99,6 +103,19 @@ public sealed partial class MainWindowViewModel(IFileDialogService dialogService
     [RelayCommand]
     public async Task GenerateWorkpaper()
     {
+    }
+
+    private void UpdateAutoDetectedTemplate(PropertyMetadata property)
+    {
+        ReportSelected = true;
+        PropertyTemplates.Remove(DEFAULT_TEMPLATE);
+        
+        if (!GeneratedTemplates.TryGetValue(property.Code, out var path)) 
+            return;
+        
+        SelectedTemplateCode = property.Code;
+        SelectedTemplateFilePath = path;
+        SelectedTemplatePathIsOverride = false;
     }
 
     static MainWindowViewModel()
