@@ -1,7 +1,7 @@
 <Window
     Height="450"
-    Title="{Binding Title}"
     SizeToContent="WidthAndHeight"
+    Title="{Binding Title}"
     d:DesignHeight="450"
     d:DesignWidth="700"
     mc:Ignorable="d"
@@ -43,9 +43,9 @@
                             Content="{Binding ButtonText}"
                             HorizontalAlignment="Center"
                             HorizontalContentAlignment="Center"
-                            Width="75"
                             IsEnabled="{Binding HasTransactions}"
-                            Margin="5"/>
+                            Margin="5"
+                            Width="75" />
                     </DataTemplate>
                 </DataGridTemplateColumn.CellTemplate>
             </DataGridTemplateColumn>

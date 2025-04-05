@@ -79,9 +79,9 @@
             Grid.Row="2"
             Orientation="Horizontal">
             <ComboBox
+                IsEnabled="{Binding ReportSelected}"
                 ItemsSource="{Binding PropertyTemplates}"
                 Margin="10"
-                IsEnabled="{Binding ReportSelected}"
                 Name="TemplateSelection"
                 SelectedItem="{Binding SelectedTemplateCode}"
                 SelectionChanged="OnTemplateSelected" />
