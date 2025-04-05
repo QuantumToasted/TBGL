@@ -1,12 +1,11 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using ClosedXML.Excel;
 
 namespace TBGL.Common;
 
-public class GeneralLedgerTransactionHistory(IXLRange range)
+public sealed class GeneralLedgerTransactionHistory(IXLRange range)
 {
     private int? _transactionCount;
     

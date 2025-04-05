@@ -1,0 +1,46 @@
+<Window
+    SizeToContent="WidthAndHeight"
+    Title="{Binding Title}"
+    d:DesignHeight="450"
+    d:DesignWidth="800"
+    mc:Ignorable="d"
+    x:Class="TBGL.Views.TrialBalanceWindow"
+    x:DataType="vm:TrialBalanceViewModel"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:vm="using:TBGL.ViewModels"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <DataGrid
+        BorderBrush="Black"
+        BorderThickness="1"
+        CanUserSortColumns="False"
+        GridLinesVisibility="Horizontal"
+        HorizontalAlignment="Stretch"
+        IsReadOnly="True"
+        ItemsSource="{Binding Accounts}"
+        Margin="20">
+        <DataGrid.Columns>
+            <DataGridTextColumn
+                Binding="{Binding Metadata}"
+                Header="G/L Account"
+                Width="Auto" />
+            <DataGridTextColumn
+                Binding="{Binding OpeningBalance, StringFormat='{}{0:C}'}"
+                Header="Opening Balance"
+                Width="Auto" />
+            <DataGridTextColumn
+                Binding="{Binding Debit, StringFormat='{}{0:C}'}"
+                Header="Debit"
+                Width="Auto" />
+            <DataGridTextColumn
+                Binding="{Binding Credit, StringFormat='{}{0:C}'}"
+                Header="Credit"
+                Width="Auto" />
+            <DataGridTextColumn
+                Binding="{Binding ClosingBalance, StringFormat='{}{0:C}'}"
+                Header="Closing Balance"
+                Width="Auto" />
+        </DataGrid.Columns>
+    </DataGrid>
+</Window>

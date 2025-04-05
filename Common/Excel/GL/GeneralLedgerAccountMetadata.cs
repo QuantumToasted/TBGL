@@ -3,12 +3,9 @@ using System.Text.RegularExpressions;
 
 namespace TBGL.Common;
 
-public sealed partial record GeneralLedgerAccountMetadata(string Category, string SubCategory, string Name)
+public sealed partial record GeneralLedgerAccountMetadata(string Category, string SubCategory, string Name) : AccountMetadata(Category, SubCategory, Name)
 {
     private static readonly Regex BalanceForwardRegex = MyRegex();
-
-    public override string ToString()
-        => $"{Category}-{SubCategory}: {Name}";
 
     // example input: "1001-0000 - Example 1-0 (Balance Forward As of 01/01/2025)"
     public static GeneralLedgerAccountMetadata Parse(string text)

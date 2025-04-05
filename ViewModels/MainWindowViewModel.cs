@@ -52,6 +52,8 @@ public sealed partial class MainWindowViewModel(IFileDialogService dialogService
         try
         {
             var result = await excelService.LoadTrialBalanceWorkbookAsync(file);
+            
+            await windowService.ShowTrialBalanceWindowAsync();
 
             TrialBalanceReport = result;
 

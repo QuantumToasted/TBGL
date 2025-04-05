@@ -7,4 +7,5 @@ public interface IWindowService
 {
     Task ShowTransactionHistoryListWindowAsync();
     void ShowTransactionHistoryDetailsWindow(GeneralLedgerTransactionHistory history);
+    Task ShowTrialBalanceWindowAsync();
 }

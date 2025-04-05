@@ -24,6 +24,9 @@ public sealed class WindowService(IServiceProvider services) : IWindowService
         }
     }
 
+    public Task ShowTrialBalanceWindowAsync()
+        => ShowWindowDialogAsync<TrialBalanceWindow, MainWindow>();
+
     private TWindow ShowWindow<TWindow>() 
         where TWindow : Window
     {

@@ -32,7 +32,7 @@ public partial class App : Application
             .AddViewWithViewModel<MainWindow, MainWindowViewModel>(ServiceLifetime.Singleton)
             .AddViewWithViewModel<TransactionHistoryListWindow, TransactionHistoryListWindowViewModel>()
             .AddViewWithViewModel<TransactionHistoryDetailsWindow, TransactionHistoryDetailsWindowViewModel>()
-            //.AddSingleton<ViewLocator>()
+            .AddViewWithViewModel<TrialBalanceWindow, TrialBalanceViewModel>()
             .AddSingletonWithImplementation<IWindowService, WindowService>()
             .AddSingletonWithImplementation<IFileDialogService, FileDialogService>()
             .AddSingletonWithImplementation<IExcelService, ExcelService>()
