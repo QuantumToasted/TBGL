@@ -123,10 +123,7 @@ public sealed partial class MainWindowViewModel(IFileDialogService dialogService
     static MainWindowViewModel()
     {
         GeneratedTemplates = Directory.GetFiles("./Templates", "*.toml", SearchOption.TopDirectoryOnly)
-            .ToDictionary(Path.GetFileNameWithoutExtension, x =>
-            {
-                return new Uri(Path.GetFullPath(x));
-            });
+            .ToDictionary(x => Path.GetFileNameWithoutExtension(x)!, x => new Uri(Path.GetFullPath(x)));
     }
 
     public void Dispose()
