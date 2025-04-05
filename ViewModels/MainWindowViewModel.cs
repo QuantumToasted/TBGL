@@ -4,6 +4,7 @@ using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using Avalonia.Input;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using MsBox.Avalonia;
@@ -109,11 +110,16 @@ public sealed partial class MainWindowViewModel(IFileDialogService dialogService
     {
         ReportSelected = true;
         PropertyTemplates.Remove(DEFAULT_TEMPLATE);
+
+        var code = property.Code;
+        if (!GeneratedTemplates.TryGetValue(property.Code, out var path))
+        {
+            var (k, v) = GeneratedTemplates.First();
+
+            (code, path) = (k, v);
+        }
         
-        if (!GeneratedTemplates.TryGetValue(property.Code, out var path)) 
-            return;
-        
-        SelectedTemplateCode = property.Code;
+        SelectedTemplateCode = code;
         SelectedTemplateFilePath = path;
         SelectedTemplatePathIsOverride = false;
     }
