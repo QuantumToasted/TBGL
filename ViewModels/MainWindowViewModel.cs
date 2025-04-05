@@ -113,11 +113,7 @@ public sealed partial class MainWindowViewModel(IFileDialogService dialogService
 
         var code = property.Code;
         if (!GeneratedTemplates.TryGetValue(property.Code, out var path))
-        {
-            var (k, v) = GeneratedTemplates.First();
-
-            (code, path) = (k, v);
-        }
+            (code, path) = GeneratedTemplates.First();
         
         SelectedTemplateCode = code;
         SelectedTemplateFilePath = path;
