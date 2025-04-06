@@ -15,7 +15,7 @@ codes = ["1003-0000"]
 
 [[groups]]
 name = "1004"
-codes = ["1002-0000"]
+codes = ["1004-0000"]
 
 [[groups]]
 name = "1005"

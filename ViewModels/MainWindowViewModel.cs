@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using Avalonia.Input;
 using CommunityToolkit.Mvvm.ComponentModel;
@@ -11,6 +13,7 @@ using MsBox.Avalonia;
 using TBGL.Common;
 using TBGL.Services;
 using TBGL.Views;
+using Tomlyn;
 
 namespace TBGL.ViewModels;
 
@@ -19,7 +22,7 @@ public sealed partial class MainWindowViewModel(IFileDialogService dialogService
     private const string DEFAULT_TEMPLATE = "Auto-detect";
     private const string OVERRIDE_TEMPLATE = "Override";
     
-    private static readonly Dictionary<string, Uri> GeneratedTemplates;
+    private static readonly Dictionary<string, TemplateModel> LocalTemplates;
 
     [ObservableProperty]
     private TrialBalanceLoadResult? _trialBalanceReport;
@@ -28,7 +31,7 @@ public sealed partial class MainWindowViewModel(IFileDialogService dialogService
     private GeneralLedgerLoadResult? _generalLedgerReport;
 
     [ObservableProperty]
-    private Uri? _selectedTemplateFilePath;
+    private TemplateModel? _selectedTemplate;
 
     [ObservableProperty] 
     private bool _reportSelected;
@@ -41,7 +44,7 @@ public sealed partial class MainWindowViewModel(IFileDialogService dialogService
 
     public override string Title => "TBGL";
 
-    public ObservableCollection<string> PropertyTemplates { get; } = new(new [] {DEFAULT_TEMPLATE}.Concat(GeneratedTemplates.Keys).Append(OVERRIDE_TEMPLATE));
+    public ObservableCollection<string> PropertyTemplates { get; } = new(new [] {DEFAULT_TEMPLATE}.Concat(LocalTemplates.Keys).Append(OVERRIDE_TEMPLATE));
 
     [RelayCommand]
     public async Task BrowseTrialBalance()
@@ -93,12 +96,12 @@ public sealed partial class MainWindowViewModel(IFileDialogService dialogService
         switch (added)
         {
             case OVERRIDE_TEMPLATE:
-                SelectedTemplateFilePath = await dialogService.ShowTemplateFileDialogAsync();
+                SelectedTemplate = await dialogService.ShowTemplateFileDialogAsync();
                 break;
             case DEFAULT_TEMPLATE:
                 return;
             default:
-                SelectedTemplateFilePath = GeneratedTemplates[added];
+                SelectedTemplate = LocalTemplates[added];
                 return;
         }
     }
@@ -106,6 +109,17 @@ public sealed partial class MainWindowViewModel(IFileDialogService dialogService
     [RelayCommand]
     public async Task GenerateWorkpaper()
     {
+        if (!IsGenerationReady(out var error))
+        {
+            await MessageBoxManager.GetMessageBoxStandard("Error", $"Cannot generate workpaper:\n\n{error}").ShowAsync();
+            return;
+        }
+        
+        var path = await dialogService.ShowGeneratedWorkpaperDialogAsync(SelectedTemplate!);
+        if (path is null)
+            return;
+        
+        excelService.GenerateWorkpaper(SelectedTemplate!, path!);
     }
 
     private void UpdateAutoDetectedTemplate(PropertyMetadata property)
@@ -114,18 +128,45 @@ public sealed partial class MainWindowViewModel(IFileDialogService dialogService
         PropertyTemplates.Remove(DEFAULT_TEMPLATE);
 
         var code = property.Code;
-        if (!GeneratedTemplates.TryGetValue(property.Code, out var path))
-            (code, path) = GeneratedTemplates.First();
+        if (!LocalTemplates.TryGetValue(property.Code, out var template))
+            (code, template) = LocalTemplates.First();
         
         SelectedTemplateCode = code;
-        SelectedTemplateFilePath = path;
+        SelectedTemplate = template;
         SelectedTemplatePathIsOverride = false;
+    }
+
+    private bool IsGenerationReady([NotNullWhen(false)] out string? error)
+    {
+        var builder = new StringBuilder();
+        var ready = true;
+
+        if (GeneralLedgerReport is null)
+        {
+            ready = false;
+            builder.AppendLine("General ledger report is not loaded.");
+        }
+
+        if (TrialBalanceReport is null)
+        {
+            ready = false;
+            builder.AppendLine("Trial balance report is not loaded.");
+        }
+
+        if (SelectedTemplate is null)
+        {
+            ready = false;
+            builder.AppendLine("Property template is not selected.");
+        }
+
+        error = builder.Length > 0 ? builder.ToString() : null;
+        return ready;
     }
 
     static MainWindowViewModel()
     {
-        GeneratedTemplates = Directory.GetFiles("./Templates", "*.toml", SearchOption.TopDirectoryOnly)
-            .ToDictionary(x => Path.GetFileNameWithoutExtension(x)!, x => new Uri(Path.GetFullPath(x)));
+        LocalTemplates = Directory.GetFiles("./Templates", "*.toml", SearchOption.TopDirectoryOnly)
+            .ToDictionary(x => Path.GetFileNameWithoutExtension(x)!, x => Toml.ToModel<TemplateModel>(File.ReadAllText(x)));
     }
 
     public void Dispose()

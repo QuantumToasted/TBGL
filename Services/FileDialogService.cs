@@ -1,5 +1,6 @@
 using System;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Avalonia.Controls.ApplicationLifetimes;
@@ -17,10 +18,16 @@ public sealed class FileDialogService : IFileDialogService
     public Task<Uri?> ShowGeneralLedgerFileDialogAsync()
         => OpenFilePickerAsync("General Ledger Report location?", "General_Ledger_Report", Filter.XLSX);
 
-    public Task<Uri?> ShowTemplateFileDialogAsync()
-        => OpenFilePickerAsync("Property Template location?", "Template", Filter.TOML);
+    public async Task<TemplateModel?> ShowTemplateFileDialogAsync()
+    {
+        if (await OpenFilePickerAsync("Property Template location?", "Template", Filter.TOML) is not { } uri)
+            return null;
 
-    public async Task<Uri?> ShowGeneratedWorkpaperDialogAsync(PropertyMetadata property)
+        var toml = await File.ReadAllTextAsync(uri.LocalPath);
+        return TemplateModel.FromToml(toml);
+    }
+
+    public async Task<Uri?> ShowGeneratedWorkpaperDialogAsync(TemplateModel template)
     {
         try
         {
@@ -31,7 +38,7 @@ public sealed class FileDialogService : IFileDialogService
                 FileTypeChoices = [Filter.XLSX],
                 DefaultExtension = "xlsx",
                 ShowOverwritePrompt = true,
-                SuggestedFileName = property.Code.ToString(),
+                SuggestedFileName = template.Name,
                 Title = "Save Generated Workpaper",
                 SuggestedStartLocation = suggestedStartLocation
             });
@@ -43,6 +50,11 @@ public sealed class FileDialogService : IFileDialogService
             Debug.WriteLine(ex);
             return null;
         }
+    }
+
+    public Task GenerateWorkpaperAsync(Uri path)
+    {
+        throw new NotImplementedException();
     }
 
     private static async Task<Uri?> OpenFilePickerAsync(string title, string suggestedFileName, FilePickerFileType fileType)

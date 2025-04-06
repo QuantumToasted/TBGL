@@ -89,7 +89,7 @@
                 BorderThickness="0"
                 HorizontalAlignment="Left"
                 IsVisible="{Binding SelectedTemplatePathIsOverride}"
-                Text="{Binding SelectedTemplateFilePath, Converter={StaticResource PathValueConverter}, ConverterParameter={StaticResource ShortPathLength}}"
+                Text="{Binding SelectedTemplate}"
                 VerticalAlignment="Center" />
         </StackPanel>
         <Button

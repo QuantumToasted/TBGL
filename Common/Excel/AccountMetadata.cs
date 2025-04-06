@@ -5,6 +5,9 @@ public record AccountMetadata(string Category, string SubCategory, string Name)
     public sealed override string ToString()
         => $"{Category}-{SubCategory}: {Name}";
 
+    public string GetNumber()
+        => $"{Category}-{SubCategory}";
+
     public static AccountMetadata FromRaw(string accountNumber, string name)
     {
         var split = accountNumber.Split('-');
