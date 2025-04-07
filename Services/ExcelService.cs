@@ -9,13 +9,12 @@ using Avalonia.Platform.Storage;
 using ClosedXML.Excel;
 using DocumentFormat.OpenXml.Office2010.Excel;
 using TBGL.Common;
+using TBGL.Extensions;
 
 namespace TBGL.Services;
 
 public sealed class ExcelService : IExcelService
 {
-    public const string ACCOUNTING_CELL_FORMAT = """_(""$""* #,##0.00_);_(""$""* \(#,##0.00\);_(""$""* ""-""??_);_(@_)""";
-    
     private static readonly IReadOnlyDictionary<string, XLColor> Colors;
     
     public TrialBalanceLoadResult? TrialBalanceReport { get; private set; }
@@ -46,45 +45,40 @@ public sealed class ExcelService : IExcelService
 
             var trialBalanceWorksheet = workbook.AddWorksheet("Trial Balance Report");
 
-            trialBalanceWorksheet.Cell(1, 1).SetValue("Property:");
-            trialBalanceWorksheet.Cell(1, 2).SetValue(TrialBalanceReport.Property.ToString());
+            trialBalanceWorksheet.FillValues(1..2, 1..4,
+                "Property:", TrialBalanceReport.Property.ToString(),
+                "Reporting Book:", TrialBalanceReport.ReportingBook,
+                "Start Date:", TrialBalanceReport.StartDate.ToString("d"),
+                "End Date:", TrialBalanceReport.EndDate.ToString("d"));
 
-            trialBalanceWorksheet.Cell("A2").SetValue("Reporting Book:");
-            trialBalanceWorksheet.Cell("B2").SetValue(TrialBalanceReport.ReportingBook);
-
-            trialBalanceWorksheet.Cell("A3").SetValue("Start Date:");
-            trialBalanceWorksheet.Cell("B3").SetValue(TrialBalanceReport.StartDate.ToString("d"));
-
-            trialBalanceWorksheet.Cell("A4").SetValue("End Date:");
-            trialBalanceWorksheet.Cell("B4").SetValue(TrialBalanceReport.EndDate.ToString("d"));
-
-            trialBalanceWorksheet.Cell("A5").SetValue("Account Number");
-            trialBalanceWorksheet.Cell("B5").SetValue("Account Name");
-            trialBalanceWorksheet.Cell("C5").SetValue($"Opening balance on {TrialBalanceReport.StartDate:d}");
-            trialBalanceWorksheet.Cell("D5").SetValue("Debit");
-            trialBalanceWorksheet.Cell("E5").SetValue("Credit");
-            trialBalanceWorksheet.Cell("F5").SetValue($"Closing balance on {TrialBalanceReport.EndDate:d}");
+            trialBalanceWorksheet.FillValues(5, 1..6,
+                "Account Number", "Account Name", $"Opening balance on {TrialBalanceReport.StartDate:d}", "Debit",
+                "Credit", $"Closing balance on {TrialBalanceReport.EndDate:d}");
 
             var trialBalanceRow = 5;
             foreach (var account in TrialBalanceReport.Accounts)
             {
                 trialBalanceRow++;
-                trialBalanceWorksheet.Cell($"A{trialBalanceRow}").SetValue($"{account.Metadata.Category}-{account.Metadata.SubCategory}");
-                trialBalanceWorksheet.Cell($"B{trialBalanceRow}").SetValue(account.Metadata.Name);
-                trialBalanceWorksheet.Cell($"C{trialBalanceRow}").SetValue(account.OpeningBalance).Style.NumberFormat.SetFormat(ACCOUNTING_CELL_FORMAT);
-                trialBalanceWorksheet.Cell($"D{trialBalanceRow}").SetValue(account.Debit).Style.NumberFormat.SetFormat(ACCOUNTING_CELL_FORMAT);
-                trialBalanceWorksheet.Cell($"E{trialBalanceRow}").SetValue(account.Credit).Style.NumberFormat.SetFormat(ACCOUNTING_CELL_FORMAT);
-                trialBalanceWorksheet.Cell($"F{trialBalanceRow}").SetValue(account.ClosingBalance).Style.NumberFormat.SetFormat(ACCOUNTING_CELL_FORMAT);
+
+                trialBalanceWorksheet.FillValues(trialBalanceRow, 1..6,
+                    $"{account.Metadata.Category}-{account.Metadata.SubCategory}",
+                    account.Metadata.Name,
+                    account.OpeningBalance,
+                    account.Debit,
+                    account.Credit,
+                    account.ClosingBalance);
+
+                trialBalanceWorksheet.Range(trialBalanceRow, 3..6).SetCurrencyFormat();
             }
 
-            var range = trialBalanceWorksheet.Range($"A5:F{trialBalanceRow}");
+            var range = trialBalanceWorksheet.Range(5, 1, trialBalanceRow, 6);
             var table = range.CreateTable("Accounts").SetShowHeaderRow(true).SetShowTotalsRow(true).SetShowAutoFilter(false);
             table.TotalsRow().Cell(1).SetValue("Totals:");
             table.Fields.Skip(1).First().TotalsRowFunction = XLTotalsRowFunction.None;
             foreach (var field in table.Fields.Skip(2))
             {
                 field.TotalsRowFunction = XLTotalsRowFunction.Sum;
-                field.TotalsCell.Style.NumberFormat.SetFormat(ACCOUNTING_CELL_FORMAT);
+                field.TotalsCell.SetCurrencyFormat();
             }
 
             trialBalanceWorksheet.Columns().AdjustToContents();
@@ -103,35 +97,25 @@ public sealed class ExcelService : IExcelService
                 {
                     var groupRowStart = groupRow;
 
-                    sheet.Cell(groupRow, 01).SetValue(account.Metadata.ToString());
-                    sheet.Cell(groupRow, 02).SetValue("Balance Forward");
-                    sheet.Cell(groupRow, 03).SetValue($"January {year}");
-                    sheet.Cell(groupRow, 04).SetValue($"February {year}");
-                    sheet.Cell(groupRow, 05).SetValue($"March {year}");
-                    sheet.Cell(groupRow, 06).SetValue($"April {year}");
-                    sheet.Cell(groupRow, 07).SetValue($"May {year}");
-                    sheet.Cell(groupRow, 08).SetValue($"June {year}");
-                    sheet.Cell(groupRow, 09).SetValue($"July {year}");
-                    sheet.Cell(groupRow, 10).SetValue($"August {year}");
-                    sheet.Cell(groupRow, 11).SetValue($"September {year}");
-                    sheet.Cell(groupRow, 12).SetValue($"October {year}");
-                    sheet.Cell(groupRow, 13).SetValue($"November {year}");
-                    sheet.Cell(groupRow, 14).SetValue($"December {year}");
+                    sheet.FillValues(groupRow, 1..14,
+                        account.Metadata.ToString(), "Balance Forward",
+                        $"January {year}", $"February {year}", $"March {year}",
+                        $"April {year}", $"May {year}", $"June {year}",
+                        $"July {year}", $"August {year}", $"September {year}",
+                        $"October {year}", $"November {year}", $"December {year}");
 
                     groupRow++;
-                    sheet.Cell(groupRow, 2).SetValue(account.StartingBalance).Style.NumberFormat.SetFormat(ACCOUNTING_CELL_FORMAT);
+                    sheet.Cell(groupRow, 2).SetCurrencyValue(account.StartingBalance);
                     
                     foreach (var month in account.EnumerateTransactions(false).GroupBy(x => x.PostedDate!.Value.Month))
                     {
                         foreach (var transaction in month)
                         {
                             groupRow++;
-                            sheet.Cell(groupRow, 1).SetValue(transaction.Memo).Style.NumberFormat
-                                .SetNumberFormatId((int)XLPredefinedFormat.Number.Text);
+                            sheet.Cell(groupRow, 1).SetTextValue(transaction.Memo);
                             // debit is +, credit is -
                             var amount = transaction.Debit ?? -transaction.Credit;
-                            sheet.Cell(groupRow, monthOffset + month.Key).SetValue(amount).Style.NumberFormat
-                                .SetFormat(ACCOUNTING_CELL_FORMAT);
+                            sheet.Cell(groupRow, monthOffset + month.Key).SetCurrencyValue(amount);
                         }
                     }
                     
@@ -149,20 +133,20 @@ public sealed class ExcelService : IExcelService
                         field.TotalsRowFormulaR1C1 = i == 1
                             ? $"R{groupRowStart + 1}C"
                             : $"=RC[-1]+SUM(R{groupRowStart + 1}C:R{groupRow}C)";
-                        field.TotalsCell.Style.NumberFormat.SetFormat(ACCOUNTING_CELL_FORMAT);
+                        field.TotalsCell.SetCurrencyFormat();
                     }
 
                     groupRow += 3;
                     sheet.Cell(groupRow, 13).SetValue("G/L Balance:");
-                    sheet.Cell(groupRow, 14).SetFormulaR1C1("=R[-2]C").Style.NumberFormat.SetFormat(ACCOUNTING_CELL_FORMAT);
+                    sheet.Cell(groupRow, 14).SetFormulaR1C1("=R[-2]C").SetCurrencyFormat();
 
                     groupRow++;
                     sheet.Cell(groupRow, 13).SetValue("TB Balance:");
-                    sheet.Cell(groupRow, 14).SetFormulaR1C1($"=VLOOKUP(\"{account.Metadata.GetNumber()}\", 'Trial Balance Report'!R6C1:R{trialBalanceRow}C6, 6, FALSE)").Style.NumberFormat.SetFormat(ACCOUNTING_CELL_FORMAT);
-                    
+                    sheet.Cell(groupRow, 14).SetFormulaR1C1(
+                        Formula.VLookup(account.Metadata.GetNumber(), trialBalanceWorksheet.Range(6, 1, trialBalanceRow, 6), 6));
                     groupRow++;
                     sheet.Cell(groupRow, 13).SetValue("Difference:");
-                    sheet.Cell(groupRow, 14).SetFormulaR1C1("=ABS(R[-1]C-R[-2]C)").Style.NumberFormat.SetFormat(ACCOUNTING_CELL_FORMAT);
+                    sheet.Cell(groupRow, 14).SetFormulaR1C1("=ABS(R[-1]C-R[-2]C)").SetCurrencyFormat();
 
                     groupRow += 3;
                 }
