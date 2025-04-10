@@ -27,8 +27,8 @@ public sealed record GeneralLedgerTransaction(
         
         return new(
             balance + (debit ?? 0) - (credit ?? 0),
-            DateOnly.Parse(row.Cell(1).GetString()),
-            DateOnly.Parse(row.Cell(2).GetString()),
+            row.Cell(1).GetDateOnly(),
+            row.Cell(2).GetDateOnly(),
             row.Cell(3).GetStringOrDefault(),
             row.Cell(4).GetStringOrDefault(),
             row.Cell(5).GetStringOrDefault(),

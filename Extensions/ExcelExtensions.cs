@@ -79,4 +79,13 @@ public static class ExcelExtensions
 
         return range;
     }
+    
+    public static DateOnly GetDateOnly(this IXLCell cell)
+    {
+        return cell.TryGetValue(out DateTime dt)
+            ? DateOnly.FromDateTime(dt)
+            : cell.TryGetValue(out string s)
+                ? DateOnly.Parse(s)
+                : throw new FormatException($"The format {cell.Value} could not be parsed to a DateOnly.");
+    }
 }
