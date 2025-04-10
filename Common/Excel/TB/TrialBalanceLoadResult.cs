@@ -18,7 +18,7 @@ public sealed class TrialBalanceLoadResult(string path, IXLWorksheet worksheet) 
 
     private static IEnumerable<TrialBalanceAccount> EnumerateRows(IXLWorksheet worksheet)
     {
-        foreach (var row in worksheet.Rows(9, worksheet.RowCount()))
+        foreach (var row in worksheet.Rows(9, worksheet.RowsUsed().Count()))
         {
             if (row.Cell(2).IsEmpty()) // "Totals" row has nothing for account name
                 yield break;
