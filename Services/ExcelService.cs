@@ -83,6 +83,8 @@ public sealed class ExcelService : IExcelService
 
             trialBalanceWorksheet.Columns().AdjustToContents();
 
+            var tieOutAccountLocations = new Dictionary<GeneralLedgerAccountMetadata, IXLAddress>();
+
             const int monthOffset = 2;
             foreach (var group in template.Groups)
             {
@@ -139,11 +141,12 @@ public sealed class ExcelService : IExcelService
                     groupRow += 3;
                     sheet.Cell(groupRow, 13).SetValue("G/L Balance:");
                     sheet.Cell(groupRow, 14).SetFormulaR1C1("=R[-2]C").SetCurrencyFormat();
+                    tieOutAccountLocations[account.Metadata] = sheet.Cell(groupRow, 14).Address;
 
                     groupRow++;
                     sheet.Cell(groupRow, 13).SetValue("TB Balance:");
                     sheet.Cell(groupRow, 14).SetFormulaR1C1(
-                        Formula.VLookup(account.Metadata.GetNumber(), trialBalanceWorksheet.Range(6, 1, trialBalanceRow, 6), 6))
+                        Formula.VLookup($"\"{account.Metadata.GetNumber()}\"", trialBalanceWorksheet.Range(6, 1, trialBalanceRow, 6), 6))
                         .SetCurrencyFormat();
                     groupRow++;
                     sheet.Cell(groupRow, 13).SetValue("Difference:");
@@ -155,6 +158,39 @@ public sealed class ExcelService : IExcelService
                 sheet.Columns().AdjustToContents();
                 sheet.Column(1).Width = 50;
             }
+
+            var tieOutWorksheet = workbook.AddWorksheet("Tie-Out Proof", 2);
+            tieOutWorksheet.FillValues(1, 1..4, "Account Number", "Account Name", "Trial Balance Entry", "Proof");
+
+            var tieOutRow = 1;
+            var startReached = false;
+            foreach (var (account, address) in tieOutAccountLocations)
+            {
+                var startAccount = AccountMetadata.FromRaw(template.TieOutStart, "");
+                if (!startReached)
+                {
+                    if (!startAccount.Equals(account))
+                        continue;
+
+                    startReached = true;
+                }
+                
+                tieOutRow++;
+                tieOutWorksheet.FillValues(tieOutRow, 1..2, account.GetNumber(), account.Name);
+                var tbFormula = Formula.IfError(
+                    Formula.VLookup($"\"{account.GetNumber()}\"", trialBalanceWorksheet.Range(6, 1, trialBalanceRow, 6), 6),
+                    0);
+                tieOutWorksheet.Cell(tieOutRow, 3).SetFormulaR1C1(tbFormula).SetCurrencyFormat();
+
+                var proofFormula = Formula.If(Formula.Equals(address.ToString(XLReferenceStyle.R1C1, true), "RC[-1]"), "\"TIES TO TB\"", "\"FIX ME!!!\"");
+                tieOutWorksheet.Cell(tieOutRow, 4).SetFormulaR1C1(proofFormula);
+                
+                var endAccount = AccountMetadata.FromRaw(template.TieOutEnd, "");
+                if (startReached && endAccount.Equals(account))
+                    break;
+            }
+
+            tieOutWorksheet.Columns().AdjustToContents();
 
             workbook.SaveAs(path.LocalPath);
         }

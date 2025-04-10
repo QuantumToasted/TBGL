@@ -25,22 +25,27 @@ public class TemplateGroupModel
         
         if (start is not null && end is not null)
         {
-            var found = false;
+            var rangeStarted = false;
             foreach (var history in histories)
             {
-                if (history.Metadata.GetNumber().Equals(start))
-                    found = true;
+                if (!rangeStarted)
+                {
+                    if (!history.Metadata.GetNumber().Equals(start))
+                        continue;
 
-                if (found)
-                    yield return history;
-
-                if (history.Metadata.GetNumber().Equals(end))
-                    yield break;
-
+                    rangeStarted = true;
+                }
+                
                 // TODO: this feels like a hack.
                 // If our "end" is 1200, and there ISN'T a 1200, we should stop if we find anything > 1200.
-                var split = end.Split('-');
-                if (int.Parse(split[0]) > int.Parse(history.Metadata.Category))
+                var endCategory = int.Parse(end.Split('-')[0]);
+                var currentCategory = int.Parse(history.Metadata.Category);
+                if (rangeStarted && endCategory < currentCategory)
+                    yield break;
+
+                yield return history;
+
+                if (rangeStarted && history.Metadata.GetNumber().Equals(end))
                     yield break;
             }
 

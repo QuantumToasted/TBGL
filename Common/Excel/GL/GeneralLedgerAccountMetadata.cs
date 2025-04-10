@@ -7,6 +7,10 @@ public sealed partial record GeneralLedgerAccountMetadata(string Category, strin
 {
     private static readonly Regex BalanceForwardRegex = MyRegex();
 
+    public bool Equals(GeneralLedgerAccountMetadata? other) => base.Equals(other);
+
+    public override int GetHashCode() => base.GetHashCode();
+
     // example input: "1001-0000 - Example 1-0 (Balance Forward As of 01/01/2025)"
     public static GeneralLedgerAccountMetadata Parse(string text)
     {

@@ -18,7 +18,7 @@ public sealed class VLookupFormula(XLCellValue lookupValue, IXLRange lookupRange
     {
         return
         [
-            $"\"{LookupValue.ToString()}\"",
+            LookupValue.ToString(),
             LookupRange.ToString()!,
             ColumnOffset.ToString(),
             ApproximateMatch.ToString().ToUpper()

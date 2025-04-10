@@ -9,6 +9,10 @@ public sealed class TemplateModel
 
     public List<TemplateGroupModel> Groups { get; init; } = [];
 
+    public string TieOutStart { get; init; } = null!;
+
+    public string TieOutEnd { get; init; } = null!;
+
     public override string ToString()
         => Name;
 

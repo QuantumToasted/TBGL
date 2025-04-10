@@ -1,3 +1,5 @@
+using System;
+
 namespace TBGL.Common;
 
 public record AccountMetadata(string Category, string SubCategory, string Name)
@@ -7,6 +9,16 @@ public record AccountMetadata(string Category, string SubCategory, string Name)
 
     public string GetNumber()
         => $"{Category}-{SubCategory}";
+
+    public virtual bool Equals(AccountMetadata? other)
+    {
+        return other?.Category == Category && other.SubCategory == SubCategory;
+    }
+
+    public override int GetHashCode()
+    {
+        return HashCode.Combine(Category, SubCategory);
+    }
 
     public static AccountMetadata FromRaw(string accountNumber, string name)
     {

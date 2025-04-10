@@ -1,4 +1,6 @@
 name = "Example Property (1234)"
+tie_out_start = "1001-0000"
+tie_out_end = "1500-0000"
 
 # TODO: display: details (default), summary, balance?
 [[groups]]
