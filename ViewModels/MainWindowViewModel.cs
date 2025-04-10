@@ -118,8 +118,15 @@ public sealed partial class MainWindowViewModel(IFileDialogService dialogService
         var path = await dialogService.ShowGeneratedWorkpaperDialogAsync(SelectedTemplate!);
         if (path is null)
             return;
-        
-        excelService.GenerateWorkpaper(GeneralLedgerReport!.Property, SelectedTemplate!, path!);
+
+        try
+        {
+            excelService.GenerateWorkpaper(GeneralLedgerReport!.Property, SelectedTemplate!, path);
+        }
+        catch (Exception ex)
+        {
+            await MessageBoxManager.GetMessageBoxStandard("Error", $"Could not generate workpaper:\n\n{ex}").ShowAsync();
+        }
     }
 
     private void UpdateAutoDetectedTemplate(PropertyMetadata property)
