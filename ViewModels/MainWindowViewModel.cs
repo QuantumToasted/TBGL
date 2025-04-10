@@ -119,7 +119,7 @@ public sealed partial class MainWindowViewModel(IFileDialogService dialogService
         if (path is null)
             return;
         
-        excelService.GenerateWorkpaper(SelectedTemplate!, path!);
+        excelService.GenerateWorkpaper(GeneralLedgerReport!.Property, SelectedTemplate!, path!);
     }
 
     private void UpdateAutoDetectedTemplate(PropertyMetadata property)

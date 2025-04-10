@@ -15,29 +15,37 @@ public class TemplateGroupModel
     
     public string[]? Codes { get; init; }
 
-    public IEnumerable<GeneralLedgerTransactionHistory> Filter(IEnumerable<GeneralLedgerTransactionHistory> histories)
+    public string GetName(PropertyMetadata property)
+        => Name.Replace("{PROP}", property.Code);
+
+    public IEnumerable<GeneralLedgerTransactionHistory> Filter(PropertyMetadata property, IEnumerable<GeneralLedgerTransactionHistory> histories)
     {
-        if (Start is not null && End is not null)
+        var start = Start?.Replace("{PROP}", property.Code);
+        var end = End?.Replace("{PROP}", property.Code);
+        
+        if (start is not null && end is not null)
         {
             var found = false;
             foreach (var history in histories)
             {
-                if (history.Metadata.GetNumber().Equals(Start))
+                if (history.Metadata.GetNumber().Equals(start))
                     found = true;
 
                 if (found)
                     yield return history;
 
-                if (history.Metadata.GetNumber().Equals(End))
+                if (history.Metadata.GetNumber().Equals(end))
                     yield break;
             }
 
             yield break;
         }
 
+        var codes = Codes?.Select(x => x.Replace("{PROP}", property.Code)).ToList();
+
         foreach (var history in histories)
         {
-            if (Codes!.Contains(history.Metadata.GetNumber()))
+            if (codes!.Contains(history.Metadata.GetNumber()))
                 yield return history;
         }
     }

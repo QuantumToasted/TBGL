@@ -11,5 +11,5 @@ public interface IExcelService
     
     Task<TrialBalanceLoadResult> LoadTrialBalanceWorkbookAsync(Uri workbookPath);
     Task<GeneralLedgerLoadResult> LoadGeneralLedgerWorkbookAsync(Uri workbookPath);
-    void GenerateWorkpaper(TemplateModel template, Uri path);
+    void GenerateWorkpaper(PropertyMetadata property, TemplateModel template, Uri path);
 }

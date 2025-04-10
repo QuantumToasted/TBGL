@@ -35,7 +35,7 @@ public sealed class ExcelService : IExcelService
         return GeneralLedgerReport = new GeneralLedgerLoadResult(workbookPath.LocalPath, workbook.Worksheet(1));
     }
 
-    public void GenerateWorkpaper(TemplateModel template, Uri path)
+    public void GenerateWorkpaper(PropertyMetadata property, TemplateModel template, Uri path)
     {
         Debug.Assert(TrialBalanceReport is not null);
 
@@ -86,10 +86,10 @@ public sealed class ExcelService : IExcelService
             const int monthOffset = 2;
             foreach (var group in template.Groups)
             {
-                var color = Colors.GetValueOrDefault(group.Color ?? string.Empty) ?? XLColor.NoColor;
-                var sheet = workbook.AddWorksheet(group.Name).SetTabColor(color);
+                var color = Colors.GetValueOrDefault(group.Color?.ToLower() ?? string.Empty) ?? XLColor.NoColor;
+                var sheet = workbook.AddWorksheet(group.GetName(property)).SetTabColor(color);
 
-                var accounts = group.Filter(GeneralLedgerReport!.TransactionHistories).ToList();
+                var accounts = group.Filter(property, GeneralLedgerReport!.TransactionHistories).ToList();
 
                 var groupRow = 1;
                 var year = TrialBalanceReport.StartDate.Year;
@@ -143,7 +143,8 @@ public sealed class ExcelService : IExcelService
                     groupRow++;
                     sheet.Cell(groupRow, 13).SetValue("TB Balance:");
                     sheet.Cell(groupRow, 14).SetFormulaR1C1(
-                        Formula.VLookup(account.Metadata.GetNumber(), trialBalanceWorksheet.Range(6, 1, trialBalanceRow, 6), 6));
+                        Formula.VLookup(account.Metadata.GetNumber(), trialBalanceWorksheet.Range(6, 1, trialBalanceRow, 6), 6))
+                        .SetCurrencyFormat();
                     groupRow++;
                     sheet.Cell(groupRow, 13).SetValue("Difference:");
                     sheet.Cell(groupRow, 14).SetFormulaR1C1("=ABS(R[-1]C-R[-2]C)").SetCurrencyFormat();
