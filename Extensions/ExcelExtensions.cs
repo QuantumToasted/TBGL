@@ -42,9 +42,7 @@ public static class ExcelExtensions
 
     public static IXLCell SetTextValue(this IXLCell cell, string? value)
     {
-        cell.SetValue(value ?? string.Empty).Style.NumberFormat
-            .SetNumberFormatId((int)XLPredefinedFormat.Number.Text);
-
+        cell.SetValue(value ?? string.Empty);
         return cell;
     }
     
