@@ -88,6 +88,7 @@ public sealed class ExcelService : IExcelService
             {
                 var color = Colors.GetValueOrDefault(group.Color?.ToLower() ?? string.Empty) ?? XLColor.NoColor;
                 var sheet = workbook.AddWorksheet(group.GetName(property)).SetTabColor(color);
+                sheet.ColumnWidth = 150;
 
                 var accounts = group.Filter(property, GeneralLedgerReport!.TransactionHistories).ToList();
 
@@ -152,7 +153,7 @@ public sealed class ExcelService : IExcelService
                     groupRow += 3;
                 }
 
-                sheet.Columns().AdjustToContents();
+                sheet.Columns(2, sheet.LastColumnUsed()!.ColumnNumber()).AdjustToContents();
             }
 
             workbook.SaveAs(path.LocalPath);
