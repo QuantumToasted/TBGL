@@ -36,6 +36,12 @@ public class TemplateGroupModel
 
                 if (history.Metadata.GetNumber().Equals(end))
                     yield break;
+
+                // TODO: this feels like a hack.
+                // If our "end" is 1200, and there ISN'T a 1200, we should stop if we find anything > 1200.
+                var split = end.Split('-');
+                if (int.Parse(split[0]) > int.Parse(history.Metadata.Category))
+                    yield break;
             }
 
             yield break;
